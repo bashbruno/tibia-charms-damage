@@ -3,10 +3,12 @@ package storage
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"strings"
 )
+
+const DATA = "./assets/data.json"
 
 type Resistance struct {
 	Type  string  `json:"type"`
@@ -77,12 +79,12 @@ func (cs *CreatureStore) Count() int {
 	return len(cs.all)
 }
 
-func InitializeCreatureStore() (*CreatureStore, error) {
-	store, err := LoadCreatures("data.json")
+func MakeCreatureStore() (*CreatureStore, error) {
+	store, err := LoadCreatures(DATA)
 	if err != nil {
 		return nil, err
 	}
 
-	log.Printf("Successfully loaded %d creatures into memory", store.Count())
+	slog.Info("Successfully loaded creatures into memory", "count", store.Count())
 	return store, nil
 }
