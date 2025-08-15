@@ -12,6 +12,9 @@ import (
 
 const fallbackListenAddr = ":8000"
 
+func init() {
+}
+
 func main() {
 	app := makeApp()
 	mux := app.mount()
@@ -26,7 +29,6 @@ func makeApp() *application {
 	if err != nil {
 		log.Fatal("Error loading environment variables")
 	}
-
 	store, err := storage.MakeCreatureStore()
 	if err != nil {
 		log.Fatalf("Failed to load creature data: %v", err)

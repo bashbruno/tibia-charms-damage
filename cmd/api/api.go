@@ -21,7 +21,7 @@ type config struct {
 func (app *application) mount() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /", app.homeHandler)
-	mux.HandleFunc("GET /static/", app.staticAssetsHandler)
+	mux.HandleFunc("GET /static/", app.assetsHandler)
 	return mux
 }
 

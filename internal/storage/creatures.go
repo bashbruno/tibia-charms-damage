@@ -3,23 +3,32 @@ package storage
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
-	"os"
+	"net/http"
 	"strings"
+
+	"github.com/bashbruno/tibia-charms-damage/internal/env"
 )
 
-const data = "./assets/data.json"
-
-type Resistance struct {
-	Type  string  `json:"type"`
-	Value float64 `json:"value"`
-}
-
 type Creature struct {
-	Name        string       `json:"name"`
-	Difficulty  string       `json:"difficulty"`
-	Health      float64      `json:"health"`
-	Resistances []Resistance `json:"resistances"`
+	BestiaryClass  string  `json:"bestiaryClass"`
+	Name           string  `json:"name"`
+	BestiaryLevel  string  `json:"bestiaryLevel"`
+	Occurrence     string  `json:"occurrence"`
+	CharmPoints    float64 `json:"charmPoints"`
+	Experience     float64 `json:"experience"`
+	Hitpoints      float64 `json:"hitpoints"`
+	Armor          float64 `json:"armor"`
+	Mitigation     float64 `json:"mitigation"`
+	PhysicalDmgMod float64 `json:"physicalDmgMod"`
+	EarthDmgMod    float64 `json:"earthDmgMod"`
+	FireDmgMod     float64 `json:"fireDmgMod"`
+	DeathDmgMod    float64 `json:"deathDmgDod"`
+	EnergyDmgMod   float64 `json:"energyDmgMod"`
+	HolyDmgMod     float64 `json:"holyDmgMod"`
+	IceDmgMod      float64 `json:"iceDmgMod"`
+	HealDmgMod     float64 `json:"healDmgMod"`
 }
 
 type CreatureStore struct {
@@ -27,10 +36,21 @@ type CreatureStore struct {
 	all    []Creature
 }
 
-func LoadCreatures(filename string) (*CreatureStore, error) {
-	data, err := os.ReadFile(filename)
+func LoadCreatures() (*CreatureStore, error) {
+	dataURL := env.GetString("DATA_URL", "")
+	if dataURL == "" {
+		return nil, fmt.Errorf("invalid DATA_URL")
+	}
+
+	resp, err := http.Get(dataURL)
 	if err != nil {
-		return nil, fmt.Errorf("error reading %s: %w", filename, err)
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading data file: %w", err)
 	}
 
 	var creatures []Creature
@@ -39,7 +59,7 @@ func LoadCreatures(filename string) (*CreatureStore, error) {
 	}
 
 	store := &CreatureStore{
-		byName: make(map[string]*Creature),
+		byName: make(map[string]*Creature, len(creatures)),
 		all:    creatures,
 	}
 
@@ -62,7 +82,7 @@ func (cs *CreatureStore) FuzzyFind(searchTerm string) []*Creature {
 	var matches []*Creature
 	lowerSearch := strings.ToLower(searchTerm)
 
-	for _, creature := range cs.all {
+	for _, creature := range cs.GetAll() {
 		if strings.Contains(strings.ToLower(creature.Name), lowerSearch) {
 			creatureCopy := creature
 			matches = append(matches, &creatureCopy)
@@ -77,11 +97,11 @@ func (cs *CreatureStore) GetAll() []Creature {
 }
 
 func (cs *CreatureStore) Count() int {
-	return len(cs.all)
+	return len(cs.GetAll())
 }
 
 func MakeCreatureStore() (*CreatureStore, error) {
-	store, err := LoadCreatures(data)
+	store, err := LoadCreatures()
 	if err != nil {
 		return nil, err
 	}

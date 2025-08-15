@@ -5,19 +5,15 @@ import (
 	"text/template"
 )
 
-func (app *application) htmlResponse(w http.ResponseWriter, r *http.Request, filePath string) {
-	tmpl, err := template.ParseFiles(filePath)
+func (app *application) htmlResponse(w http.ResponseWriter, r *http.Request, data any, filenames ...string) {
+	tmpl, err := template.ParseFiles(filenames...)
 	if err != nil {
 		app.logError(r, err)
 		http.Error(w, "Unable to load HTML template", http.StatusInternalServerError)
 		return
 	}
 
-	data := map[string]string{
-		"Title": "Toma",
-	}
-
-	err = tmpl.Execute(w, data)
+	err = tmpl.ExecuteTemplate(w, "index", data)
 	if err != nil {
 		app.logError(r, err)
 		http.Error(w, "Unable to render HTML template", http.StatusInternalServerError)
