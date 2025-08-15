@@ -4,7 +4,6 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
-	"text/template"
 	"time"
 
 	"github.com/bashbruno/tibia-charms-damage/internal/storage"
@@ -21,11 +20,8 @@ type config struct {
 
 func (app *application) mount() http.Handler {
 	mux := http.NewServeMux()
-
-	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		app.htmlResponse(w, r, "./web/templates/index.html")
-	})
-
+	mux.HandleFunc("GET /", app.homeHandler)
+	mux.HandleFunc("GET /static/", app.staticAssetsHandler)
 	return mux
 }
 
@@ -48,27 +44,4 @@ func (app *application) run(mux http.Handler) error {
 	slog.Info("Server has stopped", "addr", app.config.addr)
 
 	return nil
-}
-
-func (app *application) htmlResponse(w http.ResponseWriter, r *http.Request, filePath string) {
-	tmpl, err := template.ParseFiles(filePath)
-	if err != nil {
-		app.logError(r, err)
-		http.Error(w, "Unable to load HTML template", http.StatusInternalServerError)
-		return
-	}
-
-	data := map[string]string{
-		"Title": "Toma",
-	}
-
-	err = tmpl.Execute(w, data)
-	if err != nil {
-		app.logError(r, err)
-		http.Error(w, "Unable to render HTML template", http.StatusInternalServerError)
-	}
-}
-
-func (app *application) logError(r *http.Request, err error) {
-	slog.Error("Err", "method", r.Method, "path", r.URL.Path, "remoteAddr", r.RemoteAddr, "error", err.Error())
 }

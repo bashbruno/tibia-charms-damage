@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-const DATA = "./assets/data.json"
+const data = "./assets/data.json"
 
 type Resistance struct {
 	Type  string  `json:"type"`
@@ -53,7 +53,8 @@ func LoadCreatures(filename string) (*CreatureStore, error) {
 }
 
 func (cs *CreatureStore) GetByName(name string) (*Creature, bool) {
-	creature, exists := cs.byName[name]
+	lowerName := strings.ToLower(name)
+	creature, exists := cs.byName[lowerName]
 	return creature, exists
 }
 
@@ -80,7 +81,7 @@ func (cs *CreatureStore) Count() int {
 }
 
 func MakeCreatureStore() (*CreatureStore, error) {
-	store, err := LoadCreatures(DATA)
+	store, err := LoadCreatures(data)
 	if err != nil {
 		return nil, err
 	}
