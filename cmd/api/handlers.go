@@ -9,6 +9,7 @@ import (
 const (
 	layoutHTML  = "./web/templates/index.html"
 	resultsHTML = "./web/templates/results.html"
+	cardHTML    = "./web/templates/card.html"
 )
 
 type searchResult struct {
@@ -37,7 +38,7 @@ func (app *application) homeHandler(w http.ResponseWriter, r *http.Request) {
 		"Result": result,
 	}
 
-	app.htmlResponse(w, r, data, layoutHTML, resultsHTML)
+	app.htmlResponse(w, r, data, layoutHTML, resultsHTML, cardHTML)
 }
 
 func (app *application) assetsHandler(w http.ResponseWriter, r *http.Request) {

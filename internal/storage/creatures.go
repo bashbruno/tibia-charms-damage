@@ -19,10 +19,11 @@ const (
 )
 
 type BreakpointSummary struct {
-	NeutralElementalDamage float64
-	WeakestElementalDamage float64
-	Overflux               CharmSummary
-	Overpower              CharmSummary
+	NeutralElementalDamage     float64
+	WeakestElementalDamage     float64
+	WeakestElementalPercentage float64
+	Overflux                   CharmSummary
+	Overpower                  CharmSummary
 }
 
 type CharmSummary struct {
@@ -114,6 +115,7 @@ func (cs *CreatureStore) FuzzyFind(searchTerm string) []*Creature {
 
 func (cs *CreatureStore) GetBreakpoints(creature *Creature) *BreakpointSummary {
 	neutral, weakest := cs.GetElementalCharmDamage(creature)
+	_, highest := cs.GetResistances(creature)
 	maxDamageAllowed := getPercentage(creature.Hitpoints, maxDamagePercentage)
 
 	manaNeededNeutral := getResourceNeeded(neutral, overfluxResourcePercentage)
@@ -125,8 +127,9 @@ func (cs *CreatureStore) GetBreakpoints(creature *Creature) *BreakpointSummary {
 	healthNeededMax := getResourceNeeded(maxDamageAllowed, overpowerResourcePercentage)
 
 	return &BreakpointSummary{
-		NeutralElementalDamage: neutral,
-		WeakestElementalDamage: weakest,
+		NeutralElementalDamage:     neutral,
+		WeakestElementalDamage:     weakest,
+		WeakestElementalPercentage: math.Ceil(highest * 100),
 		Overflux: CharmSummary{
 			BreakEvenNeutralResourceNeeded: manaNeededNeutral,
 			BreakEvenWeakestResourceNeeded: manaNeededWeakest,

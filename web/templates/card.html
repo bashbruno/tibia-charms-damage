@@ -1,0 +1,86 @@
+{{ define "card" }}
+<div class="creature-card">
+  <h2 class="creature-name">{{ .Creature.Name }}</h2>
+
+  <div class="charm-sections">
+    <div class="charm-section">
+      <h3 class="charm-title">Elemental</h3>
+      <div class="damage-info">
+        <div class="damage-item">
+          <p class="damage-label">Neutral Elemental Damage (100%)</p>
+          <p class="damage-value">
+            {{ printf "%.0f" .Summary.NeutralElementalDamage }}
+          </p>
+        </div>
+        <div class="damage-item">
+          <p class="damage-label">
+            Strongest Elemental Damage ({{ .Summary.WeakestElementalPercentage
+            }}%)
+          </p>
+          <p class="damage-value">
+            {{ printf "%.0f" .Summary.WeakestElementalDamage }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="charm-section">
+      <h3 class="charm-title">Overflux</h3>
+      <div class="damage-info">
+        <div class="damage-item">
+          <p class="damage-label">Mana needed to outdamage Neutral</p>
+          <p class="damage-value">
+            {{ printf "%.0f" .Summary.Overflux.BreakEvenNeutralResourceNeeded }}
+          </p>
+        </div>
+        <div class="damage-item">
+          <p class="damage-label">Mana needed to outdamage Strongest</p>
+          <p class="damage-value">
+            {{ printf "%.0f" .Summary.Overflux.BreakEvenWeakestResourceNeeded }}
+          </p>
+        </div>
+        <div class="damage-item">
+          <p class="damage-label">
+            Mana needed to hit cap ({{ .Summary.Overflux.MaxDamage }})<sup
+              >(1)</sup
+            >
+          </p>
+          <p class="damage-value">
+            {{ printf "%.0f" .Summary.Overflux.MaxDamageResourceNeeded }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="charm-section">
+      <h3 class="charm-title">Overpower</h3>
+      <div class="damage-info">
+        <div class="damage-item">
+          <p class="damage-label">Health needed to outdamage Neutral</p>
+          <p class="damage-value">
+            {{ printf "%.0f" .Summary.Overpower.BreakEvenNeutralResourceNeeded
+            }}
+          </p>
+        </div>
+        <div class="damage-item">
+          <p class="damage-label">Health needed to outdamage Strongest</p>
+          <p class="damage-value">
+            {{ printf "%.0f" .Summary.Overpower.BreakEvenWeakestResourceNeeded
+            }}
+          </p>
+        </div>
+        <div class="damage-item">
+          <p class="damage-label">
+            Health needed to hit cap ({{ .Summary.Overpower.MaxDamage }})<sup
+              >(1)</sup
+            >
+          </p>
+          <p class="damage-value">
+            {{ printf "%.0f" .Summary.Overpower.MaxDamageResourceNeeded }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ end }}

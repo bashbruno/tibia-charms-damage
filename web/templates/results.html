@@ -1,13 +1,12 @@
 {{ define "results" }}
-<div>
+<div class="results-container">
   {{ if .Result }}
-  <ul>
-    {{ range .Result }}
-    <li>{{ .Creature.Name }}</li>
-    {{ end }}
-  </ul>
+  <p class="disclaimer">(1) Overpower and Overflux are capped at 8% of the creature's health</p>
+  <div class="creatures-grid">
+    {{ range .Result }} {{ template "card" . }} {{ end }}
+  </div>
   {{ else }}
-  <p>nothing found for this query</p>
+  <p class="no-results">Nothing found for this query</p>
   {{ end }}
 </div>
 {{ end }}
