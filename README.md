@@ -6,12 +6,12 @@ A web/cli app for comparing the damage of overflux/overpower charms compared to 
 
 - Go installed on your machine
 
-## Running Locally
+## Running Web Locally
 
 1. Run the application:
 
 ```bash
-make run
+make web
 ```
 
 or

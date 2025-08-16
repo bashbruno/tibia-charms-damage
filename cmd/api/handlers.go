@@ -2,20 +2,29 @@ package main
 
 import (
 	"net/http"
+
+	"github.com/bashbruno/tibia-charms-damage/internal/storage"
 )
 
-const layoutHTML = "./web/templates/index.html"
+const (
+	layoutHTML  = "./web/templates/index.html"
+	resultsHTML = "./web/templates/results.html"
+)
 
 func (app *application) homeHandler(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
 
-	creatures := app.store.GetAll()
-	data := map[string]any{
-		"Query":     query,
-		"Creatures": creatures,
+	var matches []*storage.Creature
+	if query != "" {
+		matches = app.store.FuzzyFind(query)
 	}
 
-	app.htmlResponse(w, r, data, layoutHTML)
+	data := map[string]any{
+		"Query":   query,
+		"Matches": matches,
+	}
+
+	app.htmlResponse(w, r, data, layoutHTML, resultsHTML)
 }
 
 func (app *application) assetsHandler(w http.ResponseWriter, r *http.Request) {

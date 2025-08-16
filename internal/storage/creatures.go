@@ -5,11 +5,31 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"math"
 	"net/http"
 	"strings"
 
 	"github.com/bashbruno/tibia-charms-damage/internal/env"
 )
+
+const (
+	overfluxResourcePercentage  float64 = 2.5
+	overpowerResourcePercentage float64 = 5
+)
+
+type BreakpointSummary struct {
+	NeutralElementalDamage float64
+	WeakestElementalDamage float64
+	Overflux               CharmSummary
+	Overpower              CharmSummary
+}
+
+type CharmSummary struct {
+	BreakEvenNeutralResourceNeeded float64
+	BreakEvenWeakestResourceNeeded float64
+	MaxDamage                      float64
+	MaxDamageResourceNeeded        float64
+}
 
 type Creature struct {
 	BestiaryClass  string  `json:"bestiaryClass"`
@@ -84,12 +104,73 @@ func (cs *CreatureStore) FuzzyFind(searchTerm string) []*Creature {
 
 	for _, creature := range cs.GetAll() {
 		if strings.Contains(strings.ToLower(creature.Name), lowerSearch) {
-			creatureCopy := creature
-			matches = append(matches, &creatureCopy)
+			matches = append(matches, &creature)
 		}
 	}
 
 	return matches
+}
+
+func (cs *CreatureStore) GetBreakpoints(creature *Creature) *BreakpointSummary {
+	neutral, weakest := cs.GetElementalCharmDamage(creature)
+	maxDamageAllowed := getPercentage(creature.Hitpoints, 8)
+
+	manaNeededNeutral := getResourceNeeded(neutral, overfluxResourcePercentage)
+	manaNeededWeakest := getResourceNeeded(weakest, overfluxResourcePercentage)
+	manaNeededMax := getResourceNeeded(maxDamageAllowed, overfluxResourcePercentage)
+
+	healthNeededWeakest := getResourceNeeded(weakest, overpowerResourcePercentage)
+	healthNeededNeutral := getResourceNeeded(neutral, overpowerResourcePercentage)
+	healthNeededMax := getResourceNeeded(maxDamageAllowed, overpowerResourcePercentage)
+
+	return &BreakpointSummary{
+		NeutralElementalDamage: neutral,
+		WeakestElementalDamage: weakest,
+		Overflux: CharmSummary{
+			BreakEvenNeutralResourceNeeded: manaNeededNeutral,
+			BreakEvenWeakestResourceNeeded: manaNeededWeakest,
+			MaxDamage:                      maxDamageAllowed,
+			MaxDamageResourceNeeded:        manaNeededMax,
+		},
+		Overpower: CharmSummary{
+			BreakEvenNeutralResourceNeeded: healthNeededNeutral,
+			BreakEvenWeakestResourceNeeded: healthNeededWeakest,
+			MaxDamage:                      maxDamageAllowed,
+			MaxDamageResourceNeeded:        healthNeededMax,
+		},
+	}
+}
+
+func (cs *CreatureStore) GetElementalCharmDamage(creature *Creature) (float64, float64) {
+	var neutral float64 = -1
+	var weakest float64 = -1
+
+	_, highest := cs.GetResistances(creature)
+
+	neutral = getPercentage(creature.Hitpoints, 5)
+	weakest = neutral * highest
+
+	return neutral, weakest
+}
+
+func (cs *CreatureStore) GetResistances(creature *Creature) ([]float64, float64) {
+	var highest float64 = -1
+
+	resistances := make([]float64, 7)
+	resistances = append(resistances,
+		creature.FireDmgMod,
+		creature.DeathDmgMod,
+		creature.EarthDmgMod,
+		creature.EnergyDmgMod,
+		creature.HolyDmgMod,
+		creature.IceDmgMod,
+		creature.PhysicalDmgMod)
+
+	for _, r := range resistances {
+		highest = math.Max(highest, r)
+	}
+
+	return resistances, highest
 }
 
 func (cs *CreatureStore) GetAll() []Creature {
@@ -108,4 +189,12 @@ func MakeCreatureStore() (*CreatureStore, error) {
 
 	slog.Info("Successfully loaded creatures into memory", "count", store.Count())
 	return store, nil
+}
+
+func getPercentage(from float64, target float64) float64 {
+	return from * (target / 100)
+}
+
+func getResourceNeeded(target float64, percentage float64) float64 {
+	return target / (percentage / 100)
 }
