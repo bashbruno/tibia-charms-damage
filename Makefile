@@ -1,2 +1,2 @@
-web:
+api:
 	@go run ./cmd/api

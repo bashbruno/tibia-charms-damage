@@ -5,13 +5,14 @@ A web/cli app for comparing the damage of overflux/overpower charms compared to 
 ## Prerequisites
 
 - Go installed on your machine
+- Internet connection
 
 ## Running Web Locally
 
 1. Run the application:
 
 ```bash
-make web
+make api
 ```
 
 or

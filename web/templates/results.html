@@ -1,7 +1,13 @@
 {{ define "results" }}
 <div>
-  {{ if .Matches }}
-  <p>there are results</p>
+  {{ if .Result }}
+  <ul>
+    {{ range .Result }}
+    <li>{{ .Creature.Name }}</li>
+    {{ end }}
+  </ul>
+  {{ else }}
+  <p>nothing found for this query</p>
   {{ end }}
 </div>
 {{ end }}

@@ -11,17 +11,30 @@ const (
 	resultsHTML = "./web/templates/results.html"
 )
 
+type searchResult struct {
+	Creature *storage.Creature
+	Summary  *storage.BreakpointSummary
+}
+
 func (app *application) homeHandler(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
 
-	var matches []*storage.Creature
+	var result []searchResult
+
 	if query != "" {
-		matches = app.store.FuzzyFind(query)
+		matches := app.store.FuzzyFind(query)
+		for _, m := range matches {
+			summary := app.store.GetBreakpoints(m)
+			result = append(result, searchResult{
+				Creature: m,
+				Summary:  summary,
+			})
+		}
 	}
 
 	data := map[string]any{
-		"Query":   query,
-		"Matches": matches,
+		"Query":  query,
+		"Result": result,
 	}
 
 	app.htmlResponse(w, r, data, layoutHTML, resultsHTML)
