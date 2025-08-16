@@ -15,6 +15,7 @@ import (
 const (
 	overfluxResourcePercentage  float64 = 2.5
 	overpowerResourcePercentage float64 = 5
+	maxDamagePercentage         float64 = 8
 )
 
 type BreakpointSummary struct {
@@ -113,7 +114,7 @@ func (cs *CreatureStore) FuzzyFind(searchTerm string) []*Creature {
 
 func (cs *CreatureStore) GetBreakpoints(creature *Creature) *BreakpointSummary {
 	neutral, weakest := cs.GetElementalCharmDamage(creature)
-	maxDamageAllowed := getPercentage(creature.Hitpoints, 8)
+	maxDamageAllowed := getPercentage(creature.Hitpoints, maxDamagePercentage)
 
 	manaNeededNeutral := getResourceNeeded(neutral, overfluxResourcePercentage)
 	manaNeededWeakest := getResourceNeeded(weakest, overfluxResourcePercentage)
@@ -156,7 +157,7 @@ func (cs *CreatureStore) GetElementalCharmDamage(creature *Creature) (float64, f
 func (cs *CreatureStore) GetResistances(creature *Creature) ([]float64, float64) {
 	var highest float64 = -1
 
-	resistances := make([]float64, 7)
+	resistances := make([]float64, 0)
 	resistances = append(resistances,
 		creature.FireDmgMod,
 		creature.DeathDmgMod,
