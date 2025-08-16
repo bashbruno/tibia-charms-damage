@@ -113,6 +113,18 @@ body {
   border-radius: 12px;
   padding: 25px;
   border: 1px solid #444444;
+  animation: fadeUp 0.3s ease-in-out;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .creature-name {

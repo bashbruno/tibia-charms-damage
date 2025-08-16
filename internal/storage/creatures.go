@@ -116,7 +116,7 @@ func (cs *CreatureStore) FuzzyFind(searchTerm string) []*Creature {
 func (cs *CreatureStore) GetBreakpoints(creature *Creature) *BreakpointSummary {
 	neutral, weakest := cs.GetElementalCharmDamage(creature)
 	_, highest := cs.GetResistances(creature)
-	maxDamageAllowed := getPercentage(creature.Hitpoints, maxDamagePercentage)
+	maxDamageAllowed := math.Round(getPercentage(creature.Hitpoints, maxDamagePercentage))
 
 	manaNeededNeutral := getResourceNeeded(neutral, overfluxResourcePercentage)
 	manaNeededWeakest := getResourceNeeded(weakest, overfluxResourcePercentage)
@@ -129,7 +129,7 @@ func (cs *CreatureStore) GetBreakpoints(creature *Creature) *BreakpointSummary {
 	return &BreakpointSummary{
 		NeutralElementalDamage:     neutral,
 		WeakestElementalDamage:     weakest,
-		WeakestElementalPercentage: math.Ceil(highest * 100),
+		WeakestElementalPercentage: math.Round(highest * 100),
 		Overflux: CharmSummary{
 			BreakEvenNeutralResourceNeeded: manaNeededNeutral,
 			BreakEvenWeakestResourceNeeded: manaNeededWeakest,
@@ -151,8 +151,8 @@ func (cs *CreatureStore) GetElementalCharmDamage(creature *Creature) (float64, f
 
 	_, highest := cs.GetResistances(creature)
 
-	neutral = getPercentage(creature.Hitpoints, 5)
-	weakest = neutral * highest
+	neutral = math.Round(getPercentage(creature.Hitpoints, 5))
+	weakest = math.Round(neutral * highest)
 
 	return neutral, weakest
 }
