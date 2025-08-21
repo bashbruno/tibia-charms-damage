@@ -1,7 +1,15 @@
 {{ define "results" }}
 <div class="results-container">
   {{ if .Result }}
-  <p class="disclaimer">(1) Overpower and Overflux are capped at 8% of the creature's health</p>
+  <div>
+    <p class="disclaimer">
+      (1) Strongest refers to the highest elemental vulnerability of the
+      creature
+    </p>
+    <p class="disclaimer">
+      (2) Overpower and Overflux are capped at 8% of the creature's health
+    </p>
+  </div>
   <div class="creatures-grid">
     {{ range .Result }} {{ template "card" . }} {{ end }}
   </div>

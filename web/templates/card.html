@@ -14,8 +14,8 @@
         </div>
         <div class="damage-item">
           <p class="damage-label">
-            Strongest Elemental Damage ({{ .Summary.StrongestElementalPercentage
-            }}%)
+            Strongest<sup>(1)</sup> Elemental Damage ({{
+            .Summary.StrongestElementalPercentage }}%)
           </p>
           <p class="damage-value">{{ .Summary.StrongestElementalDamage }}</p>
         </div>
@@ -40,7 +40,7 @@
         <div class="damage-item">
           <p class="damage-label">
             Mana needed to hit cap ({{ .Summary.Overflux.MaxDamage }})<sup
-              >(1)</sup
+              >(2)</sup
             >
           </p>
           <p class="damage-value">
@@ -68,7 +68,7 @@
         <div class="damage-item">
           <p class="damage-label">
             Health needed to hit cap ({{ .Summary.Overpower.MaxDamage }})<sup
-              >(1)</sup
+              >(2)</sup
             >
           </p>
           <p class="damage-value">
