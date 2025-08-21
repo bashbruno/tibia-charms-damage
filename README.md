@@ -6,6 +6,7 @@ A web/cli app for comparing the damage of overflux/overpower charms compared to 
 
 - Go installed on your machine
 - Internet connection
+- Duplicate the `.env.example` file and rename it to `.env`
 
 ## Running Web Locally
 
@@ -21,7 +22,7 @@ or
 go run ./cmd/api
 ```
 
-The application will start on port 8000 by default. You can configure the port by setting the `ADDR` environment variable.
+The application will start on port 8000 by default. You can configure the port by setting the `ADDR` variable in the .env file.
 
 ## Build
 
