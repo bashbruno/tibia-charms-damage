@@ -1,6 +1,8 @@
 {{ define "card" }}
 <div class="creature-card">
-  <h2 class="creature-name">{{ .Creature.Name }}</h2>
+  <h2 class="creature-name">
+    {{ .Creature.Name }} ({{ .Creature.Hitpoints }} HP)
+  </h2>
 
   <div class="charm-sections">
     <div class="charm-section">
@@ -8,18 +10,14 @@
       <div class="damage-info">
         <div class="damage-item">
           <p class="damage-label">Neutral Elemental Damage (100%)</p>
-          <p class="damage-value">
-            {{ .Summary.NeutralElementalDamage }}
-          </p>
+          <p class="damage-value">{{ .Summary.NeutralElementalDamage }}</p>
         </div>
         <div class="damage-item">
           <p class="damage-label">
-            Strongest Elemental Damage ({{ .Summary.WeakestElementalPercentage
+            Strongest Elemental Damage ({{ .Summary.StrongestElementalPercentage
             }}%)
           </p>
-          <p class="damage-value">
-            {{ .Summary.WeakestElementalDamage }}
-          </p>
+          <p class="damage-value">{{ .Summary.StrongestElementalDamage }}</p>
         </div>
       </div>
     </div>
@@ -36,7 +34,7 @@
         <div class="damage-item">
           <p class="damage-label">Mana needed to outdamage Strongest</p>
           <p class="damage-value">
-            {{ .Summary.Overflux.BreakEvenWeakestResourceNeeded }}
+            {{ .Summary.Overflux.BreakEvenStrongestResourceNeeded }}
           </p>
         </div>
         <div class="damage-item">
@@ -64,7 +62,7 @@
         <div class="damage-item">
           <p class="damage-label">Health needed to outdamage Strongest</p>
           <p class="damage-value">
-            {{ .Summary.Overpower.BreakEvenWeakestResourceNeeded }}
+            {{ .Summary.Overpower.BreakEvenStrongestResourceNeeded }}
           </p>
         </div>
         <div class="damage-item">

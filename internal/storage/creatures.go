@@ -19,18 +19,18 @@ const (
 )
 
 type BreakpointSummary struct {
-	NeutralElementalDamage     float64
-	WeakestElementalDamage     float64
-	WeakestElementalPercentage float64
-	Overflux                   CharmSummary
-	Overpower                  CharmSummary
+	NeutralElementalDamage      float64
+	StrongestElementalDamage    float64
+	StrongestElementalPercentage float64
+	Overflux                    CharmSummary
+	Overpower                   CharmSummary
 }
 
 type CharmSummary struct {
-	BreakEvenNeutralResourceNeeded float64
-	BreakEvenWeakestResourceNeeded float64
-	MaxDamage                      float64
-	MaxDamageResourceNeeded        float64
+	BreakEvenNeutralResourceNeeded  float64
+	BreakEvenStrongestResourceNeeded float64
+	MaxDamage                       float64
+	MaxDamageResourceNeeded         float64
 }
 
 type Creature struct {
@@ -114,47 +114,47 @@ func (cs *CreatureStore) FuzzyFind(searchTerm string) []*Creature {
 }
 
 func (cs *CreatureStore) GetBreakpoints(creature *Creature) *BreakpointSummary {
-	neutral, weakest := cs.GetElementalCharmDamage(creature)
+	neutral, strongest := cs.GetElementalCharmDamage(creature)
 	_, highest := cs.GetResistances(creature)
 	maxDamageAllowed := math.Round(getPercentage(creature.Hitpoints, maxDamagePercentage))
 
 	manaNeededNeutral := getResourceNeeded(neutral, overfluxResourcePercentage)
-	manaNeededWeakest := getResourceNeeded(weakest, overfluxResourcePercentage)
+	manaNeededStrongest := getResourceNeeded(strongest, overfluxResourcePercentage)
 	manaNeededMax := getResourceNeeded(maxDamageAllowed, overfluxResourcePercentage)
 
-	healthNeededWeakest := getResourceNeeded(weakest, overpowerResourcePercentage)
+	healthNeededStrongest := getResourceNeeded(strongest, overpowerResourcePercentage)
 	healthNeededNeutral := getResourceNeeded(neutral, overpowerResourcePercentage)
 	healthNeededMax := getResourceNeeded(maxDamageAllowed, overpowerResourcePercentage)
 
 	return &BreakpointSummary{
-		NeutralElementalDamage:     neutral,
-		WeakestElementalDamage:     weakest,
-		WeakestElementalPercentage: math.Round(highest * 100),
+		NeutralElementalDamage:      neutral,
+		StrongestElementalDamage:    strongest,
+		StrongestElementalPercentage: math.Round(highest * 100),
 		Overflux: CharmSummary{
-			BreakEvenNeutralResourceNeeded: manaNeededNeutral,
-			BreakEvenWeakestResourceNeeded: manaNeededWeakest,
-			MaxDamage:                      maxDamageAllowed,
-			MaxDamageResourceNeeded:        manaNeededMax,
+			BreakEvenNeutralResourceNeeded:  manaNeededNeutral,
+			BreakEvenStrongestResourceNeeded: manaNeededStrongest,
+			MaxDamage:                       maxDamageAllowed,
+			MaxDamageResourceNeeded:         manaNeededMax,
 		},
 		Overpower: CharmSummary{
-			BreakEvenNeutralResourceNeeded: healthNeededNeutral,
-			BreakEvenWeakestResourceNeeded: healthNeededWeakest,
-			MaxDamage:                      maxDamageAllowed,
-			MaxDamageResourceNeeded:        healthNeededMax,
+			BreakEvenNeutralResourceNeeded:  healthNeededNeutral,
+			BreakEvenStrongestResourceNeeded: healthNeededStrongest,
+			MaxDamage:                       maxDamageAllowed,
+			MaxDamageResourceNeeded:         healthNeededMax,
 		},
 	}
 }
 
 func (cs *CreatureStore) GetElementalCharmDamage(creature *Creature) (float64, float64) {
 	var neutral float64 = -1
-	var weakest float64 = -1
+	var strongest float64 = -1
 
 	_, highest := cs.GetResistances(creature)
 
 	neutral = math.Round(getPercentage(creature.Hitpoints, 5))
-	weakest = math.Round(neutral * highest)
+	strongest = math.Round(neutral * highest)
 
-	return neutral, weakest
+	return neutral, strongest
 }
 
 func (cs *CreatureStore) GetResistances(creature *Creature) ([]float64, float64) {
