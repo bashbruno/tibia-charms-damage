@@ -7,7 +7,7 @@ A web/cli app for comparing the damage of overflux/overpower charms compared to 
 - Go installed on your machine
 - Internet connection
 
-## Running Web Locally
+## Running Web locally
 
 1. Run the application:
 
