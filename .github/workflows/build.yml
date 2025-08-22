@@ -30,6 +30,3 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository }}:latest
-          build-args: |
-            PORT_ARG=${{ vars.PORT }}
-            DATA_URL_ARG=${{ vars.DATA_URL }}
