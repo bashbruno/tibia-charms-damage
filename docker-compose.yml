@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tibia-charms
+    ports:
+      - "8000:8000"
+    environment:
+      PORT: "8000"
+      DATA_URL: "https://raw.githubusercontent.com/mathiasbynens/tibia-json/main/data/bestiary.json"

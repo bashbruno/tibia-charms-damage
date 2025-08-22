@@ -9,8 +9,6 @@ A web/cli app for comparing the damage of overflux/overpower charms compared to 
 
 ## Running Web locally
 
-1. Run the application:
-
 Running it with Go via the Makefile:
 
 ```bash
@@ -19,10 +17,10 @@ make api
 
 or
 
-Running it via the Dockerfile:
+Running it via Docker:
 
 ```bash
-make docker
+docker compose up -d
 ```
 
 or

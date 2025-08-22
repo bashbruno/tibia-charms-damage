@@ -13,5 +13,5 @@ COPY --from=builder /app/bin .
 COPY --from=builder /app/web/static ./web/static
 COPY --from=builder /app/web/templates ./web/templates
 
-EXPOSE $PORT_ARG
+EXPOSE 8000
 CMD ["/app/api"]
