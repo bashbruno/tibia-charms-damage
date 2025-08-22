@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"log/slog"
 	"os"
@@ -9,7 +10,7 @@ import (
 	"github.com/bashbruno/tibia-charms-damage/internal/storage"
 )
 
-const fallbackListenAddr = ":8000"
+const fallbackListenAddr int = 8000
 
 func init() {
 }
@@ -31,7 +32,7 @@ func makeApp() *application {
 
 	return &application{
 		config: config{
-			addr: env.GetString("PORT", fallbackListenAddr),
+			addr: fmt.Sprintf(":%d", env.GetInt("PORT", fallbackListenAddr)),
 		},
 		store: store,
 	}
