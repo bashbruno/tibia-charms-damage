@@ -1,18 +1,22 @@
 FROM golang:1.25-alpine AS builder
 WORKDIR /app
-RUN apt-get update -qq && \
-  apt-get install -no-install-recommends -y build-essential pkg-config
-
-RUN curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && build-essential
-
 COPY go.mod go.sum ./
 RUN go mod tidy
 COPY . .
-RUN make build
+RUN apk add --no-cache make~=4.4 && make build
 
 FROM scratch
 WORKDIR /app
+
+ARG PORT_ARG=8000
+ARG DATA_URL_ARG
+ENV PORT=:${PORT_ARG}
+ENV DATA_URL=${DATA_URL_ARG}
+
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /app/bin .
-ARG ADDR
-EXPOSE 8000
+COPY --from=builder /app/web/static ./web/static
+COPY --from=builder /app/web/templates ./web/templates
+
+EXPOSE $PORT_ARG
 CMD ["/app/api"]

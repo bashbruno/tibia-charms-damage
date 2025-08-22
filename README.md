@@ -6,11 +6,12 @@ A web/cli app for comparing the damage of overflux/overpower charms compared to 
 
 - Go installed on your machine
 - Internet connection
-- Duplicate the `.env.example` file and rename it to `.env`
 
 ## Running Web Locally
 
 1. Run the application:
+
+Running it with Go via the Makefile:
 
 ```bash
 make api
@@ -18,11 +19,23 @@ make api
 
 or
 
+Running it via the Dockerfile:
+
+```bash
+make docker
+```
+
+or
+
+Running it directly with Go:
+
 ```bash
 go run ./cmd/api
 ```
 
-The application will start on port 8000 by default. You can configure the port by setting the `ADDR` variable in the .env file.
+If you decide to go with the latter option, don't forget to set the `PORT` and `DATA_URL` environment variables in your shell - you can grab the default values from the Makefile.
+
+The application will start on port 8000 by default. You can configure the port by setting the `PORT` variable in the Makefile/your shell.
 
 ## Build
 

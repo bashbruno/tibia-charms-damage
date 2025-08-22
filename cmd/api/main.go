@@ -7,7 +7,6 @@ import (
 
 	"github.com/bashbruno/tibia-charms-damage/internal/env"
 	"github.com/bashbruno/tibia-charms-damage/internal/storage"
-	"github.com/joho/godotenv"
 )
 
 const fallbackListenAddr = ":8000"
@@ -25,10 +24,6 @@ func makeApp() *application {
 	jsonHandler := slog.NewJSONHandler(os.Stdout, nil)
 	slog.SetDefault(slog.New(jsonHandler))
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading environment variables")
-	}
 	store, err := storage.MakeCreatureStore()
 	if err != nil {
 		log.Fatalf("Failed to load creature data: %v", err)
@@ -36,7 +31,7 @@ func makeApp() *application {
 
 	return &application{
 		config: config{
-			addr: env.GetString("ADDR", fallbackListenAddr),
+			addr: env.GetString("PORT", fallbackListenAddr),
 		},
 		store: store,
 	}
