@@ -72,7 +72,7 @@ func updateChoices(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case "j", "down", "tab":
 			m.choicesCursor++
-			len := len(m.results)
+			len := len(m.results) - 1
 			if m.choicesCursor > len {
 				m.choicesCursor = len
 			}
