@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/list"
 )
 
@@ -58,34 +57,40 @@ func resultView(m model) string {
 	c := m.target
 	t := m.store.GetBreakpoints(c)
 
-	enumeratorStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#00D787")).MarginRight(1)
-	itemStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#00D787")).MarginRight(1)
+	asterisk := asteriskStyle.Render(asteriskChar)
+
+	general := list.New(
+		fmt.Sprintf("Neutral Elemental Damage (100%%): %.0f", t.NeutralElementalDamage),
+		fmt.Sprintf("Strongest%s Elemental Damage (%.0f%%): %.0f\n", asterisk, t.StrongestElementalPercentage, t.StrongestElementalDamage),
+	)
+
+	overflux := list.New(
+		fmt.Sprintf("Mana needed to outdamage Neutral: %.0f", t.Overflux.BreakEvenNeutralResourceNeeded),
+		fmt.Sprintf("Mana needed to outdamage Strongest: %.0f", t.Overflux.BreakEvenStrongestResourceNeeded),
+		fmt.Sprintf("Mana needed to hit damage cap%s (%.0f): %.0f\n", asterisk, t.Overflux.MaxDamage, t.Overflux.MaxDamageResourceNeeded),
+	)
+
+	overpower := list.New(
+		fmt.Sprintf("Health needed to outdamage Neutral: %.0f", t.Overpower.BreakEvenNeutralResourceNeeded),
+		fmt.Sprintf("Health needed to outdamage Strongest: %.0f", t.Overpower.BreakEvenStrongestResourceNeeded),
+		fmt.Sprintf("Health needed to hit damage cap%s (%.0f): %.0f", asterisk, t.Overpower.MaxDamage, t.Overpower.MaxDamageResourceNeeded),
+	)
 
 	l := list.New(
-		"General", list.New(
-			fmt.Sprintf("Neutral Elemental Damage (100%%): %.0f", t.NeutralElementalDamage),
-			fmt.Sprintf("Strongest* Elemental Damage (%.0f%%): %.0f", t.StrongestElementalPercentage, t.StrongestElementalDamage),
-		),
-		"Overflux", list.New(
-			fmt.Sprintf("Mana needed to outdamage Neutral: %.0f", t.Overflux.BreakEvenNeutralResourceNeeded),
-			fmt.Sprintf("Mana needed to outdamage Strongest: %.0f", t.Overflux.BreakEvenStrongestResourceNeeded),
-			fmt.Sprintf("Mana needed to hit damage cap* (%.0f): %.0f", t.Overflux.MaxDamage, t.Overflux.MaxDamageResourceNeeded),
-		),
-		"Overpower", list.New(
-			fmt.Sprintf("Health needed to outdamage Neutral: %.0f", t.Overpower.BreakEvenNeutralResourceNeeded),
-			fmt.Sprintf("Health needed to outdamage Strongest: %.0f", t.Overpower.BreakEvenStrongestResourceNeeded),
-			fmt.Sprintf("Health needed to hit damage cap* (%.0f): %.0f", t.Overpower.MaxDamage, t.Overpower.MaxDamageResourceNeeded),
-		),
-	).Enumerator(list.Dash).
-		EnumeratorStyle(enumeratorStyle).
-		ItemStyle(itemStyle)
+		"General", general,
+		"Overflux", overflux,
+		"Overpower", overpower,
+	)
+	l.Enumerator(list.Dash)
+	l.EnumeratorStyle(enumeratorStyle)
+	l.ItemStyle(itemStyle)
 
 	tmpl := headerStyle.Render("%s (%.0f HP)")
 	tmpl += "\n\n"
 	tmpl += "%s\n\n"
-	tmpl += "* Strongest refers to the highest elemental vulnerability of the creature"
+	tmpl += fmt.Sprintf("%s Strongest refers to the highest elemental vulnerability of the creature", asterisk)
 	tmpl += "\n"
-	tmpl += "* Overpower and Overflux are capped at 8%% of the creature's health"
+	tmpl += fmt.Sprintf("%s Overpower and Overflux are capped at 8%% of the creature's health", asterisk)
 	tmpl += "\n\n"
 	tmpl += subtleStyle.Render("ctrl+c, q or esc to quit") + dotStyle +
 		subtleStyle.Render("enter: search again")

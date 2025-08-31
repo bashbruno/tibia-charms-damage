@@ -4,6 +4,7 @@ import (
 	"github.com/bashbruno/tibia-charms-damage/internal/storage"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type model struct {
@@ -44,6 +45,7 @@ func makeInitialModel(store *storage.CreatureStore) model {
 	ti.Focus()
 	ti.CharLimit = 156
 	ti.Width = 20
+	ti.PromptStyle = lipgloss.NewStyle().Foreground(asteriskStyle.GetForeground())
 
 	return model{
 		query:         ti,

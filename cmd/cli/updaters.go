@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -31,7 +33,7 @@ func updateInput(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyEnter:
-			q := m.query.Value()
+			q := strings.TrimSpace(m.query.Value())
 			r := []rune(q)
 			if len(r) > 0 {
 				m.state.hasQueried = true
