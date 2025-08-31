@@ -30,6 +30,8 @@ func makeApp() *application {
 		log.Fatalf("Failed to load creature data: %v", err)
 	}
 
+	slog.Info("Successfully loaded creatures into memory", "count", store.Count())
+
 	return &application{
 		config: config{
 			addr: fmt.Sprintf(":%d", env.GetInt("PORT", fallbackListenAddr)),

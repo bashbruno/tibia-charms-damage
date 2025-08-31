@@ -4,33 +4,31 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log/slog"
 	"math"
 	"net/http"
 	"strings"
-
-	"github.com/bashbruno/tibia-charms-damage/internal/env"
 )
 
 const (
 	overfluxResourcePercentage  float64 = 2.5
 	overpowerResourcePercentage float64 = 5
 	maxDamagePercentage         float64 = 8
+	dataURL                             = "https://raw.githubusercontent.com/mathiasbynens/tibia-json/main/data/bestiary.json"
 )
 
 type BreakpointSummary struct {
-	NeutralElementalDamage      float64
-	StrongestElementalDamage    float64
+	NeutralElementalDamage       float64
+	StrongestElementalDamage     float64
 	StrongestElementalPercentage float64
-	Overflux                    CharmSummary
-	Overpower                   CharmSummary
+	Overflux                     CharmSummary
+	Overpower                    CharmSummary
 }
 
 type CharmSummary struct {
-	BreakEvenNeutralResourceNeeded  float64
+	BreakEvenNeutralResourceNeeded   float64
 	BreakEvenStrongestResourceNeeded float64
-	MaxDamage                       float64
-	MaxDamageResourceNeeded         float64
+	MaxDamage                        float64
+	MaxDamageResourceNeeded          float64
 }
 
 type Creature struct {
@@ -59,11 +57,6 @@ type CreatureStore struct {
 }
 
 func LoadCreatures() (*CreatureStore, error) {
-	dataURL := env.GetString("DATA_URL", "")
-	if dataURL == "" {
-		return nil, fmt.Errorf("invalid DATA_URL")
-	}
-
 	resp, err := http.Get(dataURL)
 	if err != nil {
 		return nil, err
@@ -127,20 +120,20 @@ func (cs *CreatureStore) GetBreakpoints(creature *Creature) *BreakpointSummary {
 	healthNeededMax := getResourceNeeded(maxDamageAllowed, overpowerResourcePercentage)
 
 	return &BreakpointSummary{
-		NeutralElementalDamage:      neutral,
-		StrongestElementalDamage:    strongest,
+		NeutralElementalDamage:       neutral,
+		StrongestElementalDamage:     strongest,
 		StrongestElementalPercentage: math.Round(highest * 100),
 		Overflux: CharmSummary{
-			BreakEvenNeutralResourceNeeded:  manaNeededNeutral,
+			BreakEvenNeutralResourceNeeded:   manaNeededNeutral,
 			BreakEvenStrongestResourceNeeded: manaNeededStrongest,
-			MaxDamage:                       maxDamageAllowed,
-			MaxDamageResourceNeeded:         manaNeededMax,
+			MaxDamage:                        maxDamageAllowed,
+			MaxDamageResourceNeeded:          manaNeededMax,
 		},
 		Overpower: CharmSummary{
-			BreakEvenNeutralResourceNeeded:  healthNeededNeutral,
+			BreakEvenNeutralResourceNeeded:   healthNeededNeutral,
 			BreakEvenStrongestResourceNeeded: healthNeededStrongest,
-			MaxDamage:                       maxDamageAllowed,
-			MaxDamageResourceNeeded:         healthNeededMax,
+			MaxDamage:                        maxDamageAllowed,
+			MaxDamageResourceNeeded:          healthNeededMax,
 		},
 	}
 }
@@ -191,7 +184,6 @@ func MakeCreatureStore() (*CreatureStore, error) {
 		return nil, err
 	}
 
-	slog.Info("Successfully loaded creatures into memory", "count", store.Count())
 	return store, nil
 }
 
@@ -200,5 +192,5 @@ func getPercentage(from float64, target float64) float64 {
 }
 
 func getResourceNeeded(target float64, percentage float64) float64 {
-	return target / (percentage / 100)
+	return math.Round(target / (percentage / 100))
 }

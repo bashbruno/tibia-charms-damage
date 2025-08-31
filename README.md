@@ -7,36 +7,105 @@ A web/cli app for comparing the damage of overflux/overpower charms compared to 
 - Go installed on your machine
 - Internet connection
 
-## Running Web locally
+## Web Version
 
-Running it with Go via the Makefile:
+You can run it locally using one of these options:
+
+1. Via Makefile:
 
 ```bash
 make api
 ```
 
-or
-
-Running it via Docker:
+2. Via Docker:
 
 ```bash
 docker compose up -d
 ```
 
-or
-
-Running it directly with Go:
+3. Via Go:
 
 ```bash
 go run ./cmd/api
 ```
 
-If you decide to go with the latter option, don't forget to set the `PORT` and `DATA_URL` environment variables in your shell - you can grab the default values from the Makefile.
+The application will then start on port 8000 by default, which can be changed in the Makefile or by setting the `PORT` variable in your shell.
 
-The application will start on port 8000 by default. You can configure the port by setting the `PORT` variable in the Makefile/your shell.
+## CLI Version
 
-## Build
+You can run the CLI locally using one of these options:
+
+1. Via Makefile:
 
 ```bash
-go build -o <binary-name>
+make cli
+```
+
+2. Via Go:
+
+```bash
+go run ./cmd/cli
+```
+
+### Building the CLI Binary
+
+#### Linux/MacOS:
+
+Build the binary:
+
+```bash
+go build -o bin/tibia ./cmd/cli
+```
+
+You can then run the binary with `./bin/tibia`
+
+To be able to run it from any terminal window without specifying the full path to the binary, you can set `GOBIN` and add it to your `PATH`:
+
+In your `.bashrc`, `.zshrc` or equivalent:
+
+```bash
+export PATH=$PATH:$HOME/go/bin
+```
+
+Then move the created binary to your Go bin directory (run this from the project's folder):
+
+```bash
+mv ./bin/tibia ~/go/bin/
+```
+
+Then run from anywhere:
+
+```bash
+tibia
+```
+
+#### Windows:
+
+Build the binary:
+
+```bash
+go build -o bin/tibia.exe ./cmd/cli
+```
+
+You can then run the binary with `.\bin\tibia.exe`
+
+To be able to run it from any terminal window without specifying the full path to the binary, ensure `%USERPROFILE%\go\bin` is on `PATH`:
+
+1. Open Start Menu -> Edit environment variables
+2. Under User variables → find Path → Edit → Add:
+
+```bash
+%USERPROFILE%\go\bin
+```
+
+Then move the created binary (run this from the project's folder):
+
+```bash
+move .\bin\tibia.exe %USERPROFILE%\go\bin\
+```
+
+Then run from anywhere:
+
+```bash
+tibia
 ```
