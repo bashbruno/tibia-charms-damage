@@ -45,7 +45,7 @@ func makeInitialModel(store *storage.CreatureStore) model {
 	ti.Focus()
 	ti.CharLimit = 156
 	ti.Width = 20
-	ti.PromptStyle = lipgloss.NewStyle().Foreground(asteriskStyle.GetForeground())
+	ti.PromptStyle = lipgloss.NewStyle().Foreground(greenClr)
 
 	return model{
 		query:         ti,

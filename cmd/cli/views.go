@@ -57,23 +57,21 @@ func resultView(m model) string {
 	c := m.target
 	t := m.store.GetBreakpoints(c)
 
-	asterisk := asteriskStyle.Render(asteriskChar)
-
 	general := list.New(
 		fmt.Sprintf("Neutral Elemental Damage (100%%): %.0f", t.NeutralElementalDamage),
-		fmt.Sprintf("Strongest%s Elemental Damage (%.0f%%): %.0f\n", asterisk, t.StrongestElementalPercentage, t.StrongestElementalDamage),
+		fmt.Sprintf("Strongest%s Elemental Damage (%.0f%%): %.0f\n", asteriskStyle, t.StrongestElementalPercentage, t.StrongestElementalDamage),
 	)
 
 	overflux := list.New(
 		fmt.Sprintf("Mana needed to outdamage Neutral: %.0f", t.Overflux.BreakEvenNeutralResourceNeeded),
 		fmt.Sprintf("Mana needed to outdamage Strongest: %.0f", t.Overflux.BreakEvenStrongestResourceNeeded),
-		fmt.Sprintf("Mana needed to hit damage cap%s (%.0f): %.0f\n", asterisk, t.Overflux.MaxDamage, t.Overflux.MaxDamageResourceNeeded),
+		fmt.Sprintf("Mana needed to hit damage cap%s (%.0f): %.0f\n", asteriskStyle, t.Overflux.MaxDamage, t.Overflux.MaxDamageResourceNeeded),
 	)
 
 	overpower := list.New(
 		fmt.Sprintf("Health needed to outdamage Neutral: %.0f", t.Overpower.BreakEvenNeutralResourceNeeded),
 		fmt.Sprintf("Health needed to outdamage Strongest: %.0f", t.Overpower.BreakEvenStrongestResourceNeeded),
-		fmt.Sprintf("Health needed to hit damage cap%s (%.0f): %.0f", asterisk, t.Overpower.MaxDamage, t.Overpower.MaxDamageResourceNeeded),
+		fmt.Sprintf("Health needed to hit damage cap%s (%.0f): %.0f", asteriskStyle, t.Overpower.MaxDamage, t.Overpower.MaxDamageResourceNeeded),
 	)
 
 	l := list.New(
@@ -88,9 +86,9 @@ func resultView(m model) string {
 	tmpl := headerStyle.Render("%s (%.0f HP)")
 	tmpl += "\n\n"
 	tmpl += "%s\n\n"
-	tmpl += fmt.Sprintf("%s Strongest refers to the highest elemental vulnerability of the creature", asterisk)
+	tmpl += fmt.Sprintf("%s Strongest refers to the highest elemental vulnerability of the creature", asteriskStyle)
 	tmpl += "\n"
-	tmpl += fmt.Sprintf("%s Overpower and Overflux are capped at 8%% of the creature's health", asterisk)
+	tmpl += fmt.Sprintf("%s Overpower and Overflux are capped at 8%% of the creature's health", asteriskStyle)
 	tmpl += "\n\n"
 	tmpl += subtleStyle.Render("ctrl+c, q or esc to quit") + dotStyle +
 		subtleStyle.Render("enter: search again")

@@ -15,20 +15,24 @@ type application struct {
 }
 
 const (
-	dotChar      string = " • "
-	asteriskChar string = "*"
-	greenClr            = lipgloss.Color("#00D787")
+	dotChar        string = " • "
+	asteriskChar   string = "*"
+	greenClr              = lipgloss.Color("#00D787")
+	redClr                = lipgloss.Color("9")
+	purpleClr             = lipgloss.Color("99")
+	darkGrayClr           = lipgloss.Color("241")
+	ligtherGrayClr        = lipgloss.Color("236")
 )
 
 var (
-	errorStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("9"))
-	headerStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("99"))
-	subtleStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("241"))
-	dotStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("236")).Render(dotChar)
+	errorStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color(redClr))
+	headerStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color(purpleClr))
+	subtleStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color(darkGrayClr))
+	dotStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color(ligtherGrayClr)).Render(dotChar)
 	checkboxStyle   = lipgloss.NewStyle().Foreground(greenClr)
 	enumeratorStyle = lipgloss.NewStyle().Foreground(greenClr).MarginRight(1)
 	itemStyle       = lipgloss.NewStyle().Foreground(greenClr).MarginRight(1)
-	asteriskStyle   = lipgloss.NewStyle().Foreground(greenClr)
+	asteriskStyle   = lipgloss.NewStyle().Foreground(greenClr).Render(asteriskChar)
 )
 
 func main() {
