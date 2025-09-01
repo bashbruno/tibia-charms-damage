@@ -1,6 +1,18 @@
 {{ define "results" }}
 <div class="results-container">
-  {{ if .Result }}
+  {{ if .Result }} {{ if and (gt (len .Result) 1) (not .SelectedCreature) }}
+  <div class="creature-selection">
+    <div class="creature-buttons">
+      {{ range $index, $result := .Result }}
+      <a
+        href="?q={{ $.Query }}&selected={{ $result.Creature.Name }}"
+        class="creature-btn"
+        >{{ $result.Creature.Name }}</a
+      >
+      {{ end }}
+    </div>
+  </div>
+  {{ else }}
   <div>
     <p class="disclaimer">
       (1) Strongest refers to the highest elemental vulnerability of the
@@ -11,9 +23,10 @@
     </p>
   </div>
   <div class="creatures-grid">
-    {{ range .Result }} {{ template "card" . }} {{ end }}
+    {{ if .SelectedCreature }} {{ template "card" .SelectedCreature }} {{ else
+    }} {{ range .Result }} {{ template "card" . }} {{ end }} {{ end }}
   </div>
-  {{ else if .Query }}
+  {{ end }} {{ else if .Query }}
   <p class="no-results">Nothing found for this query</p>
   {{ end }}
 </div>
