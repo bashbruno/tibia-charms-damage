@@ -90,9 +90,9 @@ func resultView(m model) string {
 	tmpl := headerStyle.Render("%s (%.0f HP)")
 	tmpl += "\n\n"
 	tmpl += "%s\n\n"
-	tmpl += fmt.Sprintf("%s Strongest refers to the highest elemental vulnerability of the creature", asteriskStyle)
+	tmpl += asteriskStyle + " Strongest refers to the highest elemental vulnerability of the creature"
 	tmpl += "\n"
-	tmpl += fmt.Sprintf("%s Overpower and Overflux are capped at 8%% of the creature's health", asteriskStyle)
+	tmpl += asteriskStyle + " Overpower and Overflux are capped at 8%% of the creature's health"
 	tmpl += "\n\n"
 	tmpl += subtleStyle.Render("ctrl+c, q or esc: quit") + ("\n") +
 		subtleStyle.Render("enter: new search")
