@@ -1,8 +1,17 @@
 {{ define "card" }}
 <div class="creature-card">
-  <h2 class="creature-name">
-    {{ .Creature.Name }} ({{ .Creature.Hitpoints }} HP)
-  </h2>
+  <div class="card-header">
+    <h2 class="creature-name">
+      {{ .Creature.Name }} ({{ .Creature.Hitpoints }} HP)
+    </h2>
+    <a
+      href="https://tibia.fandom.com/wiki/{{ .Creature.Name }}"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="wiki-link"
+      >wiki</a
+    >
+  </div>
 
   <div class="charm-sections">
     <div class="charm-section">
@@ -39,9 +48,8 @@
         </div>
         <div class="damage-item">
           <p class="damage-label">
-            Mana needed to hit cap ({{ .Summary.Overflux.MaxDamage }})<sup
-              >(2)</sup
-            >
+            Mana needed to hit cap<sup>(2)</sup> ({{ .Summary.Overflux.MaxDamage
+            }})
           </p>
           <p class="damage-value">
             {{ .Summary.Overflux.MaxDamageResourceNeeded }}
@@ -67,9 +75,8 @@
         </div>
         <div class="damage-item">
           <p class="damage-label">
-            Health needed to hit cap ({{ .Summary.Overpower.MaxDamage }})<sup
-              >(2)</sup
-            >
+            Health needed to hit cap<sup>(2)</sup> ({{
+            .Summary.Overpower.MaxDamage }})
           </p>
           <p class="damage-value">
             {{ .Summary.Overpower.MaxDamageResourceNeeded }}

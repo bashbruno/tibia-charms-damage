@@ -118,7 +118,6 @@ body {
   color: var(--text-inverse);
 }
 
-
 .btn {
   position: absolute;
   right: 8px;
@@ -180,14 +179,48 @@ body {
   }
 }
 
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--border-default);
+  padding-bottom: 10px;
+}
+
 .creature-name {
   font-size: 1.125rem;
   font-weight: 500;
   color: var(--text-primary);
-  margin-bottom: 20px;
+  margin: 0;
   text-align: center;
-  border-bottom: 2px solid var(--border-default);
-  padding-bottom: 10px;
+  flex: 1;
+}
+
+.wiki-link {
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 0.875rem;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  padding: 4px 8px;
+  outline: none;
+}
+
+.wiki-link:visited {
+  color: #6b7280;
+}
+
+.wiki-link:hover {
+  text-decoration: underline;
+  color: var(--interactive-primary);
+}
+
+.wiki-link:focus {
+  text-decoration: underline;
+  text-decoration-color: var(--interactive-primary);
+  color: var(--interactive-primary);
+  border-color: var(--interactive-primary);
 }
 
 .charm-sections {
@@ -266,12 +299,12 @@ body {
 }
 
 .disclaimer-number {
-  color: #00D787;
+  color: #00d787;
 }
 
 sup {
   font-size: 0.7em;
-  color: #00D787;
+  color: #00d787;
 }
 
 .creature-selection {
