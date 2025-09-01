@@ -10,20 +10,17 @@ import (
 )
 
 const (
-	dotChar        string = " • "
-	asteriskChar   string = "*"
-	greenClr              = lipgloss.Color("#00D787")
-	redClr                = lipgloss.Color("9")
-	purpleClr             = lipgloss.Color("99")
-	darkGrayClr           = lipgloss.Color("241")
-	ligtherGrayClr        = lipgloss.Color("236")
+	asteriskChar string = "*"
+	greenClr            = lipgloss.Color("#00D787")
+	redClr              = lipgloss.Color("9")
+	purpleClr           = lipgloss.Color("99")
+	darkGrayClr         = lipgloss.Color("241")
 )
 
 var (
 	errorStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color(redClr))
 	headerStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color(purpleClr))
 	subtleStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color(darkGrayClr))
-	dotStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color(ligtherGrayClr)).Render(dotChar)
 	checkboxStyle   = lipgloss.NewStyle().Foreground(greenClr)
 	enumeratorStyle = lipgloss.NewStyle().Foreground(greenClr).MarginRight(1)
 	itemStyle       = lipgloss.NewStyle().Foreground(greenClr).MarginRight(1)
