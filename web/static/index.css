@@ -9,15 +9,13 @@
   --text-inverse: #000000;
   --text-muted: #6b7280;
   --text-secondary: #9ca3af;
-  --text-link: #4a4d55;
+  --text-subtle: #4a4d55;
 
-  --interactive-primary: #e5e7eb;
-  --interactive-hover: #d1d5db;
-  --interactive-border: #374151;
-  --interactive-border-hover: #4b5563;
+  --interactive-primary: #875fff;
+  --interactive-hover: #9d75ff;
 
-  --border-card: #252834;
-  --border-section: #374151;
+  --border-default: #374151;
+  --border-subtle: #252834;
 }
 
 * {
@@ -62,8 +60,16 @@ body {
 
 .header > a {
   font-size: 14px;
-  color: var(--text-link);
+  color: var(--text-subtle);
   text-decoration: underline;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  padding: 4px 8px;
+  outline: none;
+}
+
+.header > a:focus {
+  border-color: var(--interactive-primary);
 }
 
 .form {
@@ -81,13 +87,17 @@ body {
 
 .input {
   background-color: var(--bg-secondary);
-  border: none;
+  border: 2px solid transparent;
   outline: none;
   color: var(--text-primary);
   font-size: 0.875rem;
   padding: 14px 60px 14px 20px;
   border-radius: 28px;
   width: 100%;
+}
+
+.input:focus {
+  border: 2px solid var(--interactive-primary);
 }
 
 .input::placeholder {
@@ -99,15 +109,16 @@ body {
   color: var(--text-inverse);
 }
 
+
 .btn {
   position: absolute;
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  background-color: var(--interactive-primary);
-  color: var(--bg-primary);
+  background-color: var(--text-primary);
+  color: var(--text-inverse);
   font-weight: 500;
-  border: none;
+  border: 2px solid transparent;
   font-size: 1.2rem;
   width: 36px;
   height: 36px;
@@ -119,7 +130,13 @@ body {
 }
 
 .btn:hover {
-  background-color: var(--interactive-hover);
+  background-color: #e5e5e5;
+}
+
+.btn:focus {
+  border-color: var(--interactive-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--interactive-primary);
 }
 
 .results-container {
@@ -139,7 +156,7 @@ body {
   background-color: var(--bg-card);
   border-radius: 12px;
   padding: 16px;
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-default);
   animation: fadeUp 0.3s ease-in-out;
 }
 
@@ -160,7 +177,7 @@ body {
   color: var(--text-primary);
   margin-bottom: 20px;
   text-align: center;
-  border-bottom: 2px solid var(--border-section);
+  border-bottom: 2px solid var(--border-default);
   padding-bottom: 10px;
 }
 
@@ -203,7 +220,7 @@ body {
   flex-direction: column;
   gap: 4px;
   padding: 8px 0;
-  border-bottom: 1px solid var(--border-section);
+  border-bottom: 1px solid var(--border-default);
 }
 
 .damage-item:last-child {
@@ -239,8 +256,13 @@ body {
   margin-bottom: 15px;
 }
 
+.disclaimer-number {
+  color: #00D787;
+}
+
 sup {
   font-size: 0.7em;
+  color: #00D787;
 }
 
 .creature-selection {
@@ -266,8 +288,8 @@ sup {
 }
 
 .creature-btn {
-  background-color: var(--bg-secondary);
-  border: 2px solid var(--interactive-border);
+  background-color: var(--bg-card);
+  border: 2px solid transparent;
   color: var(--text-primary);
   padding: 14px 20px;
   border-radius: 8px;
@@ -284,13 +306,17 @@ sup {
   flex: 0 0 180px;
 }
 
-.creature-btn:hover {
-  background-color: var(--interactive-border);
+.creature-btn:hover,
+.creature-btn:focus {
+  background-color: var(--bg-section);
+  border-color: var(--interactive-primary);
+  color: var(--text-primary);
+  outline: none;
 }
 
 .creature-btn.active {
-  background-color: var(--interactive-primary);
-  color: var(--bg-primary);
+  background-color: var(--bg-section);
+  color: var(--text-primary);
   border-color: var(--interactive-primary);
 }
 
