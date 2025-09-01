@@ -13,7 +13,7 @@
   <div class="creatures-grid">
     {{ range .Result }} {{ template "card" . }} {{ end }}
   </div>
-  {{ else }}
+  {{ else if .Query }}
   <p class="no-results">Nothing found for this query</p>
   {{ end }}
 </div>
