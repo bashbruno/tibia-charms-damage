@@ -61,14 +61,23 @@ body {
 .header > a {
   font-size: 14px;
   color: var(--text-subtle);
-  text-decoration: underline;
+  text-decoration: none;
   border: 2px solid transparent;
   border-radius: 4px;
   padding: 4px 8px;
   outline: none;
 }
 
+.header > a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--interactive-primary);
+  color: var(--interactive-primary);
+}
+
 .header > a:focus {
+  text-decoration: underline;
+  text-decoration-color: var(--interactive-primary);
+  color: var(--interactive-primary);
   border-color: var(--interactive-primary);
 }
 
@@ -251,7 +260,7 @@ body {
 
 .disclaimer {
   text-align: center;
-  color: var(--text-muted);
+  color: var(--text-primary);
   font-size: 0.75rem;
   margin-bottom: 15px;
 }
