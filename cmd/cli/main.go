@@ -2,17 +2,12 @@ package main
 
 import (
 	"log"
-	"log/slog"
-	"os"
+	"time"
 
 	"github.com/bashbruno/tibia-charms-damage/internal/storage"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
-
-type application struct {
-	store *storage.CreatureStore
-}
 
 const (
 	dotChar        string = " • "
@@ -35,24 +30,25 @@ var (
 	asteriskStyle   = lipgloss.NewStyle().Foreground(greenClr).Render(asteriskChar)
 )
 
-func main() {
-	app := makeApp()
-	p := tea.NewProgram(makeInitialModel(app.store))
-	if _, err := p.Run(); err != nil {
-		log.Fatal(err)
-	}
+type downloadMsg struct {
+	store *storage.CreatureStore
 }
 
-func makeApp() *application {
-	jsonHandler := slog.NewJSONHandler(os.Stdout, nil)
-	slog.SetDefault(slog.New(jsonHandler))
+func main() {
+	p := tea.NewProgram(makeInitialModel(), tea.WithAltScreen())
 
-	store, err := storage.MakeCreatureStore()
-	if err != nil {
-		log.Fatalf("Failed to load creature data: %v", err)
-	}
+	go func() {
+		time.Sleep(300 * time.Millisecond)
+		store, err := storage.MakeCreatureStore()
+		if err != nil {
+			log.Fatal(err)
+		}
+		p.Send(downloadMsg{
+			store: store,
+		})
+	}()
 
-	return &application{
-		store: store,
+	if _, err := p.Run(); err != nil {
+		log.Fatal(err)
 	}
 }

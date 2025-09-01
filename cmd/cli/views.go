@@ -8,7 +8,11 @@ import (
 )
 
 func (m model) View() string {
-	s := inputView(m)
+	s := spinnerView(m)
+
+	if m.state.showInputView {
+		s = inputView(m)
+	}
 
 	if m.state.showResultView {
 		s = resultView(m)
@@ -29,7 +33,7 @@ func inputView(m model) string {
 	}
 
 	tmpl := "%s\n\n%s\n\n"
-	tmpl += subtleStyle.Render("ctrl+c or esc to quit")
+	tmpl += subtleStyle.Render("ctrl+c or esc: quit")
 
 	return fmt.Sprintf(tmpl, title, m.query.View())
 }
@@ -40,9 +44,9 @@ func choicesView(m model) string {
 	tmpl := headerStyle.Render("Which of these possible results did you mean?")
 	tmpl += "\n\n"
 	tmpl += "%s\n\n"
-	tmpl += subtleStyle.Render("j/k, tab/shift+tab or up/down: select") + dotStyle +
-		subtleStyle.Render("enter: choose") + dotStyle +
-		subtleStyle.Render("ctrl+c, q or esc to quit")
+	tmpl += subtleStyle.Render("j/k, tab/shift+tab or up/down: select") + ("\n") +
+		subtleStyle.Render("enter: choose") + ("\n") +
+		subtleStyle.Render("ctrl+c, q or esc: quit")
 
 	var checkboxes []string
 	for i, r := range m.results {
@@ -90,8 +94,8 @@ func resultView(m model) string {
 	tmpl += "\n"
 	tmpl += fmt.Sprintf("%s Overpower and Overflux are capped at 8%% of the creature's health", asteriskStyle)
 	tmpl += "\n\n"
-	tmpl += subtleStyle.Render("ctrl+c, q or esc to quit") + dotStyle +
-		subtleStyle.Render("enter: search again")
+	tmpl += subtleStyle.Render("ctrl+c, q or esc: quit") + ("\n") +
+		subtleStyle.Render("enter: new search")
 
 	return fmt.Sprintf(
 		tmpl,
@@ -99,6 +103,11 @@ func resultView(m model) string {
 		c.Hitpoints,
 		l,
 	)
+}
+
+func spinnerView(m model) string {
+	str := fmt.Sprintf("\n\n   %s Loading data...\n\n", m.spinner.View())
+	return str
 }
 
 func checkbox(label string, checked bool) string {

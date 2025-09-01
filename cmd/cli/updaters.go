@@ -15,6 +15,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
+	if m.state.showInputView {
+		return updateInput(msg, m)
+	}
+
 	if m.state.showChoicesView {
 		return updateChoices(msg, m)
 	}
@@ -23,7 +27,22 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return updateResult(msg, m)
 	}
 
-	return updateInput(msg, m)
+	return updateLoading(msg, m)
+}
+
+func updateLoading(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+
+	switch msg := msg.(type) {
+	case downloadMsg:
+		m.store = msg.store
+		m.state.isLoadingData = false
+		m.state.showInputView = true
+	default:
+		m.spinner, cmd = m.spinner.Update(msg)
+	}
+
+	return m, cmd
 }
 
 func updateInput(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
