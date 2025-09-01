@@ -109,3 +109,7 @@ Then run from anywhere:
 ```bash
 tibia
 ```
+
+## Acknowledgements
+
+A big thank you to the [mathiasbynens/tibia-json](https://github.com/mathiasbynens/tibia-json) repository, which I use to get the data for this application.
