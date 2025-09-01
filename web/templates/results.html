@@ -1,10 +1,12 @@
 {{ define "results" }}
 <div class="results-container">
-  {{ if .Result }} {{ if gt (len .Result) 1 }}
+  {{ if .Result }} {{ if and (gt (len .Result) 1) (not .SelectedCreature) }}
   <div class="creature-selection">
     <div class="creature-buttons">
       {{ range $index, $result := .Result }}
-      <a href="?q={{ $result.Creature.Name }}" class="creature-btn"
+      <a
+        href="?q={{ $.Query }}&selected={{ $result.Creature.Name }}"
+        class="creature-btn"
         >{{ $result.Creature.Name }}</a
       >
       {{ end }}
@@ -13,16 +15,16 @@
   {{ else }}
   <div>
     <p class="disclaimer">
-      <span class="disclaimer-number">(1)</span> Strongest refers to the highest
-      elemental vulnerability of the creature
+      <span class="disclaimer-number">(1)</span> Strongest refers to the highest elemental vulnerability of the
+      creature
     </p>
     <p class="disclaimer">
-      <span class="disclaimer-number">(2)</span> Overpower and Overflux are
-      capped at 8% of the creature's health
+      <span class="disclaimer-number">(2)</span> Overpower and Overflux are capped at 8% of the creature's health
     </p>
   </div>
   <div class="creatures-grid">
-    {{ range .Result }} {{ template "card" . }} {{ end }}
+    {{ if .SelectedCreature }} {{ template "card" .SelectedCreature }} {{ else
+    }} {{ range .Result }} {{ template "card" . }} {{ end }} {{ end }}
   </div>
   {{ end }} {{ else if .Query }}
   <p class="no-results">Nothing found for this query</p>
