@@ -3,7 +3,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod tidy
 COPY . .
-RUN apk add --no-cache make~=4.4 && make build
+RUN apk add --no-cache make~=4.4 && make build-api
 
 FROM scratch
 WORKDIR /app
