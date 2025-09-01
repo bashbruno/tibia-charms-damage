@@ -13,74 +13,64 @@
     >
   </div>
 
-  <div class="charm-sections">
-    <div class="charm-section">
-      <h3 class="charm-title">Elemental</h3>
-      <div class="damage-info">
-        <div class="damage-item">
-          <p class="damage-label">Neutral Elemental Damage (100%)</p>
-          <p class="damage-value">{{ .Summary.NeutralElementalDamage }}</p>
-        </div>
-        <div class="damage-item">
-          <p class="damage-label">
-            Strongest<sup>(1)</sup> Elemental Damage ({{
-            .Summary.StrongestElementalPercentage }}%)
-          </p>
-          <p class="damage-value">{{ .Summary.StrongestElementalDamage }}</p>
-        </div>
+  <div class="damage-overview">
+    <div class="primary-comparison">
+      <div class="damage-highlight elemental-strongest">
+        <div class="damage-type">Strongest<sup>(1)</sup> Elemental</div>
+        <div class="damage-main">{{ .Summary.StrongestElementalDamage }} <span class="dmg-suffix">dmg</span></div>
+        <div class="damage-subtitle">{{ .Summary.StrongestElementalPercentage }}% resistance</div>
+      </div>
+      <div class="damage-highlight elemental-neutral">
+        <div class="damage-type">Neutral Elemental</div>
+        <div class="damage-main">{{ .Summary.NeutralElementalDamage }} <span class="dmg-suffix">dmg</span></div>
+        <div class="damage-subtitle">100% resistance</div>
       </div>
     </div>
+  </div>
 
-    <div class="charm-section">
-      <h3 class="charm-title">Overflux</h3>
-      <div class="damage-info">
-        <div class="damage-item">
-          <p class="damage-label">Mana needed to outdamage Neutral</p>
-          <p class="damage-value">
-            {{ .Summary.Overflux.BreakEvenNeutralResourceNeeded }}
-          </p>
-        </div>
-        <div class="damage-item">
-          <p class="damage-label">Mana needed to outdamage Strongest</p>
-          <p class="damage-value">
-            {{ .Summary.Overflux.BreakEvenStrongestResourceNeeded }}
-          </p>
-        </div>
-        <div class="damage-item">
-          <p class="damage-label">
-            Mana needed to hit cap<sup>(2)</sup> ({{ .Summary.Overflux.MaxDamage
-            }})
-          </p>
-          <p class="damage-value">
-            {{ .Summary.Overflux.MaxDamageResourceNeeded }}
-          </p>
+  <div class="charm-alternatives">
+    <div class="charm-sections">
+      <div class="charm-section overflux">
+        <h4 class="charm-title">
+          <span class="charm-icon">🟣</span>
+          Overflux
+        </h4>
+        <div class="breakeven-group">
+          <div class="breakeven-title">Break-even Points</div>
+          <div class="damage-item compact">
+            <span class="comparison-target">vs Neutral:</span>
+            <span class="damage-value">{{ .Summary.Overflux.BreakEvenNeutralResourceNeeded }} MP</span>
+          </div>
+          <div class="damage-item compact">
+            <span class="comparison-target">vs Strongest:</span>
+            <span class="damage-value">{{ .Summary.Overflux.BreakEvenStrongestResourceNeeded }} MP</span>
+          </div>
+          <div class="damage-item compact">
+            <span class="comparison-target">Dmg cap<sup>(2)</sup> ({{ .Summary.Overflux.MaxDamage }}):</span>
+            <span class="damage-value">{{ .Summary.Overflux.MaxDamageResourceNeeded }} MP</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="charm-section">
-      <h3 class="charm-title">Overpower</h3>
-      <div class="damage-info">
-        <div class="damage-item">
-          <p class="damage-label">Health needed to outdamage Neutral</p>
-          <p class="damage-value">
-            {{ .Summary.Overpower.BreakEvenNeutralResourceNeeded }}
-          </p>
-        </div>
-        <div class="damage-item">
-          <p class="damage-label">Health needed to outdamage Strongest</p>
-          <p class="damage-value">
-            {{ .Summary.Overpower.BreakEvenStrongestResourceNeeded }}
-          </p>
-        </div>
-        <div class="damage-item">
-          <p class="damage-label">
-            Health needed to hit cap<sup>(2)</sup> ({{
-            .Summary.Overpower.MaxDamage }})
-          </p>
-          <p class="damage-value">
-            {{ .Summary.Overpower.MaxDamageResourceNeeded }}
-          </p>
+      <div class="charm-section overpower">
+        <h4 class="charm-title">
+          <span class="charm-icon">🔴</span>
+          Overpower
+        </h4>
+        <div class="breakeven-group">
+          <div class="breakeven-title">Break-even Points</div>
+          <div class="damage-item compact">
+            <span class="comparison-target">vs Neutral:</span>
+            <span class="damage-value">{{ .Summary.Overpower.BreakEvenNeutralResourceNeeded }} HP</span>
+          </div>
+          <div class="damage-item compact">
+            <span class="comparison-target">vs Strongest:</span>
+            <span class="damage-value">{{ .Summary.Overpower.BreakEvenStrongestResourceNeeded }} HP</span>
+          </div>
+          <div class="damage-item compact">
+            <span class="comparison-target">Dmg cap<sup>(2)</sup> ({{ .Summary.Overpower.MaxDamage }}):</span>
+            <span class="damage-value">{{ .Summary.Overpower.MaxDamageResourceNeeded }} HP</span>
+          </div>
         </div>
       </div>
     </div>
