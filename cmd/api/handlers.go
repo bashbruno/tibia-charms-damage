@@ -19,10 +19,8 @@ type searchResult struct {
 
 func (app *application) homeHandler(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
-	selectedName := r.URL.Query().Get("selected")
 
 	var result []searchResult
-	var selectedCreature *searchResult
 
 	if query != "" {
 		matches := app.store.FuzzyFind(query)
@@ -33,18 +31,12 @@ func (app *application) homeHandler(w http.ResponseWriter, r *http.Request) {
 				Summary:  summary,
 			}
 			result = append(result, searchRes)
-			
-			// If a specific creature is selected, find it
-			if selectedName != "" && m.Name == selectedName {
-				selectedCreature = &searchRes
-			}
 		}
 	}
 
 	data := map[string]any{
-		"Query":            query,
-		"Result":           result,
-		"SelectedCreature": selectedCreature,
+		"Query":  query,
+		"Result": result,
 	}
 
 	app.htmlResponse(w, r, data, layoutHTML, resultsHTML, cardHTML)

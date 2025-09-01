@@ -61,7 +61,7 @@ body {
 .header > a {
   font-size: 14px;
   color: var(--text-subtle);
-  text-decoration: none;
+  text-decoration: underline;
   border: 2px solid transparent;
   border-radius: 4px;
   padding: 4px 8px;
@@ -69,14 +69,10 @@ body {
 }
 
 .header > a:hover {
-  text-decoration: underline;
-  text-decoration-color: var(--interactive-primary);
   color: var(--interactive-primary);
 }
 
 .header > a:focus {
-  text-decoration: underline;
-  text-decoration-color: var(--interactive-primary);
   color: var(--interactive-primary);
   border-color: var(--interactive-primary);
 }
@@ -199,7 +195,6 @@ body {
 
 .wiki-link {
   color: #6b7280;
-  text-decoration: none;
   font-size: 0.875rem;
   border: 2px solid transparent;
   border-radius: 4px;
@@ -212,12 +207,10 @@ body {
 }
 
 .wiki-link:hover {
-  text-decoration: underline;
   color: var(--interactive-primary);
 }
 
 .wiki-link:focus {
-  text-decoration: underline;
   text-decoration-color: var(--interactive-primary);
   color: var(--interactive-primary);
   border-color: var(--interactive-primary);
@@ -247,7 +240,6 @@ body {
   color: var(--text-primary);
   margin-bottom: 12px;
   text-align: center;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
