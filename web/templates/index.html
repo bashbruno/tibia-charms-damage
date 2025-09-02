@@ -52,21 +52,28 @@
       </div>
       <h1 class="title">Which creature are you looking for?</h1>
       <form method="GET" class="form">
-        <div class="input-container">
-          <input
-            type="text"
-            value="{{ .Query }}"
-            required
-            autofocus
-            onfocus="this.setSelectionRange(this.value.length, this.value.length);"
-            spellcheck="false"
-            name="q"
-            class="input"
-            placeholder="Dragon"
-          />
-          <button type="submit" class="btn">↑</button>
+        <div class="form-row">
+          <span class="input-asterisk">*</span>
+          <div class="input-container">
+            <input
+              type="text"
+              value="{{ .Query }}"
+              required
+              autofocus
+              onfocus="this.setSelectionRange(this.value.length, this.value.length);"
+              spellcheck="false"
+              name="q"
+              class="input"
+              placeholder="Dragon"
+            />
+            <button type="submit" class="btn">↑</button>
+          </div>
         </div>
       </form>
+      <p class="hint-text">
+        <span class="asterisk">*</span> you can enter only a part of the
+        creature's name (ex: "shabu")
+      </p>
       {{ template "results" . }}
     </div>
   </body>
