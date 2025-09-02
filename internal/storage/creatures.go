@@ -14,22 +14,46 @@ const (
 	overpowerResourcePercentage float64 = 5
 	maxDamagePercentage         float64 = 8
 	dataURL                             = "https://raw.githubusercontent.com/mathiasbynens/tibia-json/main/data/bestiary.json"
-	
-	// Starting stats at level 8
-	startingLevel  = 8
-	startingHealth = 185
-	startingMana   = 90
-	
-	// Per level gains
-	knightHealthGain  = 15
-	knightManaGain    = 5
-	mageHealthGain    = 5
-	mageManaGain      = 30
-	paladinHealthGain = 10
-	paladinManaGain   = 15
-	monkHealthGain    = 10
-	monkManaGain      = 10
+	startingLevel                       = 8
+	startingHealth                      = 185
+	startingMana                        = 90
 )
+
+type ResourceType int
+
+const (
+	ResourceMana ResourceType = iota
+	ResourceHealth
+)
+
+type Class struct {
+	Name               string
+	HealthGainPerLevel int
+	ManaGainPerLevel   int
+}
+
+var classes = map[string]Class{
+	"Knight": {
+		Name:               "Knight",
+		HealthGainPerLevel: 15,
+		ManaGainPerLevel:   5,
+	},
+	"Mage": {
+		Name:               "Mage",
+		HealthGainPerLevel: 5,
+		ManaGainPerLevel:   30,
+	},
+	"Paladin": {
+		Name:               "Paladin",
+		HealthGainPerLevel: 10,
+		ManaGainPerLevel:   15,
+	},
+	"Monk": {
+		Name:               "Monk",
+		HealthGainPerLevel: 10,
+		ManaGainPerLevel:   10,
+	},
+}
 
 type BreakpointSummary struct {
 	NeutralElementalDamage       float64
@@ -148,8 +172,8 @@ func (cs *CreatureStore) GetBreakpoints(creature *Creature) *BreakpointSummary {
 	healthNeededNeutral := getResourceNeeded(neutral, overpowerResourcePercentage)
 	healthNeededMax := getResourceNeeded(maxDamageAllowed, overpowerResourcePercentage)
 
-	overfluxLevels := calculateClassLevelBreakpoints(manaNeededNeutral, manaNeededStrongest, manaNeededMax, true)
-	overpowerLevels := calculateClassLevelBreakpoints(healthNeededNeutral, healthNeededStrongest, healthNeededMax, false)
+	overfluxLevels := calculateManaLevelBreakpoints(manaNeededNeutral, manaNeededStrongest, manaNeededMax)
+	overpowerLevels := calculateHealthLevelBreakpoints(healthNeededNeutral, healthNeededStrongest, healthNeededMax)
 
 	return &BreakpointSummary{
 		NeutralElementalDamage:       neutral,
@@ -229,70 +253,50 @@ func getResourceNeeded(target float64, percentage float64) float64 {
 	return math.Round(target / (percentage / 100))
 }
 
-func calculateLevelForMana(requiredMana float64, manaPerLevel int) int {
-	if requiredMana <= startingMana {
+func calculateLevelForResource(requiredAmount float64, class Class, resourceType ResourceType) int {
+	var startingAmount float64
+	var gainPerLevel int
+
+	switch resourceType {
+	case ResourceMana:
+		startingAmount = startingMana
+		gainPerLevel = class.ManaGainPerLevel
+	case ResourceHealth:
+		startingAmount = startingHealth
+		gainPerLevel = class.HealthGainPerLevel
+	}
+
+	if requiredAmount <= startingAmount {
 		return startingLevel
 	}
-	additionalManaNeeded := requiredMana - startingMana
-	levelsNeeded := math.Ceil(additionalManaNeeded / float64(manaPerLevel))
+
+	additionalResourceNeeded := requiredAmount - startingAmount
+	levelsNeeded := math.Ceil(additionalResourceNeeded / float64(gainPerLevel))
 	return startingLevel + int(levelsNeeded)
 }
 
-func calculateLevelForHealth(requiredHealth float64, healthPerLevel int) int {
-	if requiredHealth <= startingHealth {
-		return startingLevel
+func calculateBreakpointLevelsForClass(class Class, neutralResource, strongestResource, maxResource float64, resourceType ResourceType) ClassBreakpointLevels {
+	return ClassBreakpointLevels{
+		NeutralLevel:   calculateLevelForResource(neutralResource, class, resourceType),
+		StrongestLevel: calculateLevelForResource(strongestResource, class, resourceType),
+		MaxDamageLevel: calculateLevelForResource(maxResource, class, resourceType),
 	}
-	additionalHealthNeeded := requiredHealth - startingHealth
-	levelsNeeded := math.Ceil(additionalHealthNeeded / float64(healthPerLevel))
-	return startingLevel + int(levelsNeeded)
 }
 
-func calculateClassLevelBreakpoints(neutralResource, strongestResource, maxResource float64, isOverflux bool) ClassLevelBreakpoints {
-	if isOverflux {
-		return ClassLevelBreakpoints{
-			Knight: ClassBreakpointLevels{
-				NeutralLevel:   calculateLevelForMana(neutralResource, knightManaGain),
-				StrongestLevel: calculateLevelForMana(strongestResource, knightManaGain),
-				MaxDamageLevel: calculateLevelForMana(maxResource, knightManaGain),
-			},
-			Mage: ClassBreakpointLevels{
-				NeutralLevel:   calculateLevelForMana(neutralResource, mageManaGain),
-				StrongestLevel: calculateLevelForMana(strongestResource, mageManaGain),
-				MaxDamageLevel: calculateLevelForMana(maxResource, mageManaGain),
-			},
-			Paladin: ClassBreakpointLevels{
-				NeutralLevel:   calculateLevelForMana(neutralResource, paladinManaGain),
-				StrongestLevel: calculateLevelForMana(strongestResource, paladinManaGain),
-				MaxDamageLevel: calculateLevelForMana(maxResource, paladinManaGain),
-			},
-			Monk: ClassBreakpointLevels{
-				NeutralLevel:   calculateLevelForMana(neutralResource, monkManaGain),
-				StrongestLevel: calculateLevelForMana(strongestResource, monkManaGain),
-				MaxDamageLevel: calculateLevelForMana(maxResource, monkManaGain),
-			},
-		}
-	} else {
-		return ClassLevelBreakpoints{
-			Knight: ClassBreakpointLevels{
-				NeutralLevel:   calculateLevelForHealth(neutralResource, knightHealthGain),
-				StrongestLevel: calculateLevelForHealth(strongestResource, knightHealthGain),
-				MaxDamageLevel: calculateLevelForHealth(maxResource, knightHealthGain),
-			},
-			Mage: ClassBreakpointLevels{
-				NeutralLevel:   calculateLevelForHealth(neutralResource, mageHealthGain),
-				StrongestLevel: calculateLevelForHealth(strongestResource, mageHealthGain),
-				MaxDamageLevel: calculateLevelForHealth(maxResource, mageHealthGain),
-			},
-			Paladin: ClassBreakpointLevels{
-				NeutralLevel:   calculateLevelForHealth(neutralResource, paladinHealthGain),
-				StrongestLevel: calculateLevelForHealth(strongestResource, paladinHealthGain),
-				MaxDamageLevel: calculateLevelForHealth(maxResource, paladinHealthGain),
-			},
-			Monk: ClassBreakpointLevels{
-				NeutralLevel:   calculateLevelForHealth(neutralResource, monkHealthGain),
-				StrongestLevel: calculateLevelForHealth(strongestResource, monkHealthGain),
-				MaxDamageLevel: calculateLevelForHealth(maxResource, monkHealthGain),
-			},
-		}
+func calculateManaLevelBreakpoints(neutralMana, strongestMana, maxMana float64) ClassLevelBreakpoints {
+	return ClassLevelBreakpoints{
+		Knight:  calculateBreakpointLevelsForClass(classes["Knight"], neutralMana, strongestMana, maxMana, ResourceMana),
+		Mage:    calculateBreakpointLevelsForClass(classes["Mage"], neutralMana, strongestMana, maxMana, ResourceMana),
+		Paladin: calculateBreakpointLevelsForClass(classes["Paladin"], neutralMana, strongestMana, maxMana, ResourceMana),
+		Monk:    calculateBreakpointLevelsForClass(classes["Monk"], neutralMana, strongestMana, maxMana, ResourceMana),
+	}
+}
+
+func calculateHealthLevelBreakpoints(neutralHealth, strongestHealth, maxHealth float64) ClassLevelBreakpoints {
+	return ClassLevelBreakpoints{
+		Knight:  calculateBreakpointLevelsForClass(classes["Knight"], neutralHealth, strongestHealth, maxHealth, ResourceHealth),
+		Mage:    calculateBreakpointLevelsForClass(classes["Mage"], neutralHealth, strongestHealth, maxHealth, ResourceHealth),
+		Paladin: calculateBreakpointLevelsForClass(classes["Paladin"], neutralHealth, strongestHealth, maxHealth, ResourceHealth),
+		Monk:    calculateBreakpointLevelsForClass(classes["Monk"], neutralHealth, strongestHealth, maxHealth, ResourceHealth),
 	}
 }

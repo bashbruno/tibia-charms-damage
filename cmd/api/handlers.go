@@ -33,7 +33,7 @@ func (app *application) homeHandler(w http.ResponseWriter, r *http.Request) {
 				Summary:  summary,
 			}
 			result = append(result, searchRes)
-			
+
 			if selectedName != "" && m.Name == selectedName {
 				selectedCreature = &searchRes
 			}
