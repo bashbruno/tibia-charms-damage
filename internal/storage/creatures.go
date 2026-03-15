@@ -6,6 +6,7 @@ import (
 	"io"
 	"math"
 	"net/http"
+	"sort"
 	"strings"
 )
 
@@ -55,33 +56,39 @@ var classes = map[string]Class{
 	},
 }
 
+// ClassLevels holds the required level per class for a single resource breakpoint.
+type ClassLevels struct {
+	Knight  int
+	Mage    int
+	Paladin int
+	Monk    int
+}
+
+// ElementBreakpoint is a per-element row: its charm damage and what Overflux/Overpower need to match it.
+type ElementBreakpoint struct {
+	Element               string
+	ResistancePercent     float64
+	CharmDamage           float64
+	ExceedsCap            bool
+	OverfluxManaNeeded    float64
+	OverfluxLevels        ClassLevels
+	OverpowerHealthNeeded float64
+	OverpowerLevels       ClassLevels
+}
+
+// DamageCap holds the absolute cap breakpoint (8% of HP).
+type DamageCap struct {
+	MaxDamage             float64
+	OverfluxManaNeeded    float64
+	OverfluxLevels        ClassLevels
+	OverpowerHealthNeeded float64
+	OverpowerLevels       ClassLevels
+}
+
+// BreakpointSummary is the top-level result returned by GetBreakpoints().
 type BreakpointSummary struct {
-	NeutralElementalDamage       float64
-	StrongestElementalDamage     float64
-	StrongestElementalPercentage float64
-	Overflux                     CharmSummary
-	Overpower                    CharmSummary
-}
-
-type CharmSummary struct {
-	BreakEvenNeutralResourceNeeded   float64
-	BreakEvenStrongestResourceNeeded float64
-	MaxDamage                        float64
-	MaxDamageResourceNeeded          float64
-	LevelBreakpoints                 ClassLevelBreakpoints
-}
-
-type ClassLevelBreakpoints struct {
-	Knight  ClassBreakpointLevels
-	Mage    ClassBreakpointLevels
-	Paladin ClassBreakpointLevels
-	Monk    ClassBreakpointLevels
-}
-
-type ClassBreakpointLevels struct {
-	NeutralLevel   int
-	StrongestLevel int
-	MaxDamageLevel int
+	Elements []ElementBreakpoint
+	Cap      DamageCap
 }
 
 type Creature struct {
@@ -160,72 +167,61 @@ func (cs *CreatureStore) FuzzyFind(searchTerm string) []*Creature {
 }
 
 func (cs *CreatureStore) GetBreakpoints(creature *Creature) *BreakpointSummary {
-	neutral, strongest := cs.GetElementalCharmDamage(creature)
-	_, highest := cs.GetResistances(creature)
-	maxDamageAllowed := math.Round(getPercentage(creature.Hitpoints, maxDamagePercentage))
+	hp := creature.Hitpoints
+	cap := math.Round(getPercentage(hp, maxDamagePercentage))
 
-	manaNeededNeutral := getResourceNeeded(neutral, overfluxResourcePercentage)
-	manaNeededStrongest := getResourceNeeded(strongest, overfluxResourcePercentage)
-	manaNeededMax := getResourceNeeded(maxDamageAllowed, overfluxResourcePercentage)
+	elementMods := []struct {
+		name string
+		mod  float64
+	}{
+		{"🔥 Fire", creature.FireDmgMod},
+		{"💀 Death", creature.DeathDmgMod},
+		{"🌿 Earth", creature.EarthDmgMod},
+		{"⚡ Energy", creature.EnergyDmgMod},
+		{"✨ Holy", creature.HolyDmgMod},
+		{"❄️ Ice", creature.IceDmgMod},
+		{"⚔️ Physical", creature.PhysicalDmgMod},
+	}
 
-	healthNeededStrongest := getResourceNeeded(strongest, overpowerResourcePercentage)
-	healthNeededNeutral := getResourceNeeded(neutral, overpowerResourcePercentage)
-	healthNeededMax := getResourceNeeded(maxDamageAllowed, overpowerResourcePercentage)
+	elements := make([]ElementBreakpoint, 0, len(elementMods))
+	for _, em := range elementMods {
+		charmDmg := math.Round(getPercentage(hp, 5) * em.mod)
+		exceedsCap := charmDmg > cap
 
-	overfluxLevels := calculateManaLevelBreakpoints(manaNeededNeutral, manaNeededStrongest, manaNeededMax)
-	overpowerLevels := calculateHealthLevelBreakpoints(healthNeededNeutral, healthNeededStrongest, healthNeededMax)
+		eb := ElementBreakpoint{
+			Element:           em.name,
+			ResistancePercent: math.Round(em.mod * 100),
+			CharmDamage:       charmDmg,
+			ExceedsCap:        exceedsCap,
+		}
+
+		if !exceedsCap {
+			eb.OverfluxManaNeeded = getResourceNeeded(charmDmg, overfluxResourcePercentage)
+			eb.OverfluxLevels = calculateClassLevels(eb.OverfluxManaNeeded, ResourceMana)
+			eb.OverpowerHealthNeeded = getResourceNeeded(charmDmg, overpowerResourcePercentage)
+			eb.OverpowerLevels = calculateClassLevels(eb.OverpowerHealthNeeded, ResourceHealth)
+		}
+
+		elements = append(elements, eb)
+	}
+
+	sort.Slice(elements, func(i, j int) bool {
+		return elements[i].CharmDamage > elements[j].CharmDamage
+	})
+
+	manaNeededCap := getResourceNeeded(cap, overfluxResourcePercentage)
+	healthNeededCap := getResourceNeeded(cap, overpowerResourcePercentage)
 
 	return &BreakpointSummary{
-		NeutralElementalDamage:       neutral,
-		StrongestElementalDamage:     strongest,
-		StrongestElementalPercentage: math.Round(highest * 100),
-		Overflux: CharmSummary{
-			BreakEvenNeutralResourceNeeded:   manaNeededNeutral,
-			BreakEvenStrongestResourceNeeded: manaNeededStrongest,
-			MaxDamage:                        maxDamageAllowed,
-			MaxDamageResourceNeeded:          manaNeededMax,
-			LevelBreakpoints:                 overfluxLevels,
-		},
-		Overpower: CharmSummary{
-			BreakEvenNeutralResourceNeeded:   healthNeededNeutral,
-			BreakEvenStrongestResourceNeeded: healthNeededStrongest,
-			MaxDamage:                        maxDamageAllowed,
-			MaxDamageResourceNeeded:          healthNeededMax,
-			LevelBreakpoints:                 overpowerLevels,
+		Elements: elements,
+		Cap: DamageCap{
+			MaxDamage:             cap,
+			OverfluxManaNeeded:    manaNeededCap,
+			OverfluxLevels:        calculateClassLevels(manaNeededCap, ResourceMana),
+			OverpowerHealthNeeded: healthNeededCap,
+			OverpowerLevels:       calculateClassLevels(healthNeededCap, ResourceHealth),
 		},
 	}
-}
-
-func (cs *CreatureStore) GetElementalCharmDamage(creature *Creature) (float64, float64) {
-	var neutral float64 = -1
-	var strongest float64 = -1
-
-	_, highest := cs.GetResistances(creature)
-
-	neutral = math.Round(getPercentage(creature.Hitpoints, 5))
-	strongest = math.Round(neutral * highest)
-
-	return neutral, strongest
-}
-
-func (cs *CreatureStore) GetResistances(creature *Creature) ([]float64, float64) {
-	var highest float64 = -1
-
-	resistances := make([]float64, 0)
-	resistances = append(resistances,
-		creature.FireDmgMod,
-		creature.DeathDmgMod,
-		creature.EarthDmgMod,
-		creature.EnergyDmgMod,
-		creature.HolyDmgMod,
-		creature.IceDmgMod,
-		creature.PhysicalDmgMod)
-
-	for _, r := range resistances {
-		highest = math.Max(highest, r)
-	}
-
-	return resistances, highest
 }
 
 func (cs *CreatureStore) GetAll() []Creature {
@@ -275,28 +271,11 @@ func calculateLevelForResource(requiredAmount float64, class Class, resourceType
 	return startingLevel + int(levelsNeeded)
 }
 
-func calculateBreakpointLevelsForClass(class Class, neutralResource, strongestResource, maxResource float64, resourceType ResourceType) ClassBreakpointLevels {
-	return ClassBreakpointLevels{
-		NeutralLevel:   calculateLevelForResource(neutralResource, class, resourceType),
-		StrongestLevel: calculateLevelForResource(strongestResource, class, resourceType),
-		MaxDamageLevel: calculateLevelForResource(maxResource, class, resourceType),
-	}
-}
-
-func calculateManaLevelBreakpoints(neutralMana, strongestMana, maxMana float64) ClassLevelBreakpoints {
-	return ClassLevelBreakpoints{
-		Knight:  calculateBreakpointLevelsForClass(classes["Knight"], neutralMana, strongestMana, maxMana, ResourceMana),
-		Mage:    calculateBreakpointLevelsForClass(classes["Mage"], neutralMana, strongestMana, maxMana, ResourceMana),
-		Paladin: calculateBreakpointLevelsForClass(classes["Paladin"], neutralMana, strongestMana, maxMana, ResourceMana),
-		Monk:    calculateBreakpointLevelsForClass(classes["Monk"], neutralMana, strongestMana, maxMana, ResourceMana),
-	}
-}
-
-func calculateHealthLevelBreakpoints(neutralHealth, strongestHealth, maxHealth float64) ClassLevelBreakpoints {
-	return ClassLevelBreakpoints{
-		Knight:  calculateBreakpointLevelsForClass(classes["Knight"], neutralHealth, strongestHealth, maxHealth, ResourceHealth),
-		Mage:    calculateBreakpointLevelsForClass(classes["Mage"], neutralHealth, strongestHealth, maxHealth, ResourceHealth),
-		Paladin: calculateBreakpointLevelsForClass(classes["Paladin"], neutralHealth, strongestHealth, maxHealth, ResourceHealth),
-		Monk:    calculateBreakpointLevelsForClass(classes["Monk"], neutralHealth, strongestHealth, maxHealth, ResourceHealth),
+func calculateClassLevels(resource float64, rt ResourceType) ClassLevels {
+	return ClassLevels{
+		Knight:  calculateLevelForResource(resource, classes["Knight"], rt),
+		Mage:    calculateLevelForResource(resource, classes["Mage"], rt),
+		Paladin: calculateLevelForResource(resource, classes["Paladin"], rt),
+		Monk:    calculateLevelForResource(resource, classes["Monk"], rt),
 	}
 }

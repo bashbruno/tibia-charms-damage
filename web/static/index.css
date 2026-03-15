@@ -316,13 +316,13 @@ body {
 }
 
 .charm-alternatives {
-  margin-top: 32px;
+  margin-top: 16px;
 }
 
 .charm-sections {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .charm-section {
@@ -555,4 +555,64 @@ sup {
 
 .tooltip-trigger:hover {
   background-color: var(--interactive-hover);
+}
+
+/* Breakpoint table */
+.breakpoint-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.breakpoint-table th,
+.breakpoint-table td {
+  padding: 8px 12px;
+  border: 1px solid var(--border-default);
+  text-align: left;
+}
+
+.breakpoint-table th {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.6875rem;
+}
+
+.breakpoint-table td:nth-child(2),
+.breakpoint-table td:nth-child(3),
+.breakpoint-table td:nth-child(4) {
+  text-align: right;
+}
+
+.breakpoint-table th:nth-child(2),
+.breakpoint-table th:nth-child(3),
+.breakpoint-table th:nth-child(4) {
+  text-align: right;
+}
+
+.breakpoint-table th:last-child,
+.breakpoint-table td:last-child {
+  text-align: center;
+  width: 48px;
+}
+
+.breakpoint-table tbody tr:hover {
+  background-color: var(--bg-value);
+}
+
+.breakpoint-table tbody tr.cap-row {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-top: 2px solid var(--border-default);
+}
+
+.breakpoint-table tbody tr.cap-row:hover {
+  background-color: var(--bg-secondary);
+}
+
+.breakpoint-table tbody tr.exceeds-cap .exceeds-cap-cell {
+  color: var(--text-muted);
+  font-style: italic;
 }

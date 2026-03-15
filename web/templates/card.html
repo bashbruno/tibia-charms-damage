@@ -13,84 +13,87 @@
     >
   </div>
 
-  <div class="damage-overview">
-    <div class="primary-comparison">
-      <div class="damage-highlight elemental-strongest">
-        <div class="damage-type">Strongest<sup>(1)</sup> Elemental</div>
-        <div class="damage-main">{{ .Summary.StrongestElementalDamage }} <span class="dmg-suffix">dmg</span></div>
-        <div class="damage-subtitle">{{ .Summary.StrongestElementalPercentage }}% resistance</div>
-      </div>
-      <div class="damage-highlight elemental-neutral">
-        <div class="damage-type">Neutral Elemental</div>
-        <div class="damage-main">{{ .Summary.NeutralElementalDamage }} <span class="dmg-suffix">dmg</span></div>
-        <div class="damage-subtitle">100% resistance</div>
-      </div>
-    </div>
-  </div>
-
   <div class="charm-alternatives">
     <div class="charm-sections">
+
       <div class="charm-section overflux">
         <h4 class="charm-title">
-          <span class="charm-icon">🟣</span>
           Overflux
         </h4>
-        <div class="breakeven-group">
-          <div class="breakeven-title">Break-even Points</div>
-          <div class="damage-item compact">
-            <span class="comparison-target">vs Neutral:</span>
-            <div class="damage-with-tooltip">
-              <span class="damage-value">{{ .Summary.Overflux.BreakEvenNeutralResourceNeeded }} MP</span>
-              <span class="tooltip-trigger" data-tooltip="LEVEL EK: {{ .Summary.Overflux.LevelBreakpoints.Knight.NeutralLevel }} | MS/ED: {{ .Summary.Overflux.LevelBreakpoints.Mage.NeutralLevel }} | RP: {{ .Summary.Overflux.LevelBreakpoints.Paladin.NeutralLevel }} | EM: {{ .Summary.Overflux.LevelBreakpoints.Monk.NeutralLevel }}">?</span>
-            </div>
-          </div>
-          <div class="damage-item compact">
-            <span class="comparison-target">vs Strongest:</span>
-            <div class="damage-with-tooltip">
-              <span class="damage-value">{{ .Summary.Overflux.BreakEvenStrongestResourceNeeded }} MP</span>
-              <span class="tooltip-trigger" data-tooltip="LEVEL EK: {{ .Summary.Overflux.LevelBreakpoints.Knight.StrongestLevel }} | MS/ED: {{ .Summary.Overflux.LevelBreakpoints.Mage.StrongestLevel }} | RP: {{ .Summary.Overflux.LevelBreakpoints.Paladin.StrongestLevel }} | EM: {{ .Summary.Overflux.LevelBreakpoints.Monk.StrongestLevel }}">?</span>
-            </div>
-          </div>
-          <div class="damage-item compact">
-            <span class="comparison-target">Dmg cap<sup>(2)</sup> ({{ .Summary.Overflux.MaxDamage }}):</span>
-            <div class="damage-with-tooltip">
-              <span class="damage-value">{{ .Summary.Overflux.MaxDamageResourceNeeded }} MP</span>
-              <span class="tooltip-trigger" data-tooltip="LEVEL EK: {{ .Summary.Overflux.LevelBreakpoints.Knight.MaxDamageLevel }} | MS/ED: {{ .Summary.Overflux.LevelBreakpoints.Mage.MaxDamageLevel }} | RP: {{ .Summary.Overflux.LevelBreakpoints.Paladin.MaxDamageLevel }} | EM: {{ .Summary.Overflux.LevelBreakpoints.Monk.MaxDamageLevel }}">?</span>
-            </div>
-          </div>
-        </div>
+        <table class="breakpoint-table">
+          <thead>
+            <tr>
+              <th>Element</th>
+              <th>Resist %</th>
+              <th>Dmg</th>
+              <th>Mana Needed</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{ range .Summary.Elements }}
+            <tr{{ if .ExceedsCap }} class="exceeds-cap"{{ end }}>
+              <td>{{ .Element }}</td>
+              <td>{{ .ResistancePercent }}%</td>
+              <td>{{ .CharmDamage }}</td>
+              {{ if .ExceedsCap }}
+              <td class="exceeds-cap-cell">— (exceeds cap)</td>
+              <td></td>
+              {{ else }}
+              <td>{{ .OverfluxManaNeeded }} MP</td>
+              <td><span class="tooltip-trigger" data-tooltip="LEVEL EK: {{ .OverfluxLevels.Knight }} | MS/ED: {{ .OverfluxLevels.Mage }} | RP: {{ .OverfluxLevels.Paladin }} | EM: {{ .OverfluxLevels.Monk }}">?</span></td>
+              {{ end }}
+            </tr>
+            {{ end }}
+            <tr class="cap-row">
+              <td colspan="2">Damage cap (8%)<sup>(1)</sup></td>
+              <td>{{ .Summary.Cap.MaxDamage }}</td>
+              <td>{{ .Summary.Cap.OverfluxManaNeeded }} MP</td>
+              <td><span class="tooltip-trigger" data-tooltip="LEVEL EK: {{ .Summary.Cap.OverfluxLevels.Knight }} | MS/ED: {{ .Summary.Cap.OverfluxLevels.Mage }} | RP: {{ .Summary.Cap.OverfluxLevels.Paladin }} | EM: {{ .Summary.Cap.OverfluxLevels.Monk }}">?</span></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div class="charm-section overpower">
         <h4 class="charm-title">
-          <span class="charm-icon">🔴</span>
           Overpower
         </h4>
-        <div class="breakeven-group">
-          <div class="breakeven-title">Break-even Points</div>
-          <div class="damage-item compact">
-            <span class="comparison-target">vs Neutral:</span>
-            <div class="damage-with-tooltip">
-              <span class="damage-value">{{ .Summary.Overpower.BreakEvenNeutralResourceNeeded }} HP</span>
-              <span class="tooltip-trigger" data-tooltip="LEVEL EK: {{ .Summary.Overpower.LevelBreakpoints.Knight.NeutralLevel }} | MS/ED: {{ .Summary.Overpower.LevelBreakpoints.Mage.NeutralLevel }} | RP: {{ .Summary.Overpower.LevelBreakpoints.Paladin.NeutralLevel }} | EM: {{ .Summary.Overpower.LevelBreakpoints.Monk.NeutralLevel }}">?</span>
-            </div>
-          </div>
-          <div class="damage-item compact">
-            <span class="comparison-target">vs Strongest:</span>
-            <div class="damage-with-tooltip">
-              <span class="damage-value">{{ .Summary.Overpower.BreakEvenStrongestResourceNeeded }} HP</span>
-              <span class="tooltip-trigger" data-tooltip="LEVEL EK: {{ .Summary.Overpower.LevelBreakpoints.Knight.StrongestLevel }} | MS/ED: {{ .Summary.Overpower.LevelBreakpoints.Mage.StrongestLevel }} | RP: {{ .Summary.Overpower.LevelBreakpoints.Paladin.StrongestLevel }} | EM: {{ .Summary.Overpower.LevelBreakpoints.Monk.StrongestLevel }}">?</span>
-            </div>
-          </div>
-          <div class="damage-item compact">
-            <span class="comparison-target">Dmg cap<sup>(2)</sup> ({{ .Summary.Overpower.MaxDamage }}):</span>
-            <div class="damage-with-tooltip">
-              <span class="damage-value">{{ .Summary.Overpower.MaxDamageResourceNeeded }} HP</span>
-              <span class="tooltip-trigger" data-tooltip="LEVEL EK: {{ .Summary.Overpower.LevelBreakpoints.Knight.MaxDamageLevel }} | MS/ED: {{ .Summary.Overpower.LevelBreakpoints.Mage.MaxDamageLevel }} | RP: {{ .Summary.Overpower.LevelBreakpoints.Paladin.MaxDamageLevel }} | EM: {{ .Summary.Overpower.LevelBreakpoints.Monk.MaxDamageLevel }}">?</span>
-            </div>
-          </div>
-        </div>
+        <table class="breakpoint-table">
+          <thead>
+            <tr>
+              <th>Element</th>
+              <th>Resist %</th>
+              <th>Dmg</th>
+              <th>HP Needed</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{ range .Summary.Elements }}
+            <tr{{ if .ExceedsCap }} class="exceeds-cap"{{ end }}>
+              <td>{{ .Element }}</td>
+              <td>{{ .ResistancePercent }}%</td>
+              <td>{{ .CharmDamage }}</td>
+              {{ if .ExceedsCap }}
+              <td class="exceeds-cap-cell">— (exceeds cap)</td>
+              <td></td>
+              {{ else }}
+              <td>{{ .OverpowerHealthNeeded }} HP</td>
+              <td><span class="tooltip-trigger" data-tooltip="LEVEL EK: {{ .OverpowerLevels.Knight }} | MS/ED: {{ .OverpowerLevels.Mage }} | RP: {{ .OverpowerLevels.Paladin }} | EM: {{ .OverpowerLevels.Monk }}">?</span></td>
+              {{ end }}
+            </tr>
+            {{ end }}
+            <tr class="cap-row">
+              <td colspan="2">Damage cap (8%)<sup>(1)</sup></td>
+              <td>{{ .Summary.Cap.MaxDamage }}</td>
+              <td>{{ .Summary.Cap.OverpowerHealthNeeded }} HP</td>
+              <td><span class="tooltip-trigger" data-tooltip="LEVEL EK: {{ .Summary.Cap.OverpowerLevels.Knight }} | MS/ED: {{ .Summary.Cap.OverpowerLevels.Mage }} | RP: {{ .Summary.Cap.OverpowerLevels.Paladin }} | EM: {{ .Summary.Cap.OverpowerLevels.Monk }}">?</span></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+
     </div>
   </div>
 </div>

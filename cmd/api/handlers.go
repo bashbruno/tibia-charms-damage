@@ -50,6 +50,7 @@ func (app *application) homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) assetsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-cache")
 	fs := http.FileServer(http.Dir("web/static"))
 	http.StripPrefix("/static/", fs).ServeHTTP(w, r)
 }
