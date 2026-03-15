@@ -97,7 +97,7 @@ type Creature struct {
 	PhysicalDmgMod float64 `json:"physicalDmgMod"`
 	EarthDmgMod    float64 `json:"earthDmgMod"`
 	FireDmgMod     float64 `json:"fireDmgMod"`
-	DeathDmgMod    float64 `json:"deathDmgDod"`
+	DeathDmgMod    float64 `json:"deathDmgMod"`
 	EnergyDmgMod   float64 `json:"energyDmgMod"`
 	HolyDmgMod     float64 `json:"holyDmgMod"`
 	IceDmgMod      float64 `json:"iceDmgMod"`
