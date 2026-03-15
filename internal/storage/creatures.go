@@ -101,7 +101,7 @@ type Creature struct {
 	EnergyDmgMod   float64 `json:"energyDmgMod"`
 	HolyDmgMod     float64 `json:"holyDmgMod"`
 	IceDmgMod      float64 `json:"iceDmgMod"`
-	HealDmgMod     float64 `json:"healDmgMod"`
+	HealDmgMod     float64 `json:"healMod"`
 }
 
 type CreatureStore struct {
